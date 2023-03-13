@@ -5,3 +5,9 @@
 .font-arab{
     font-family: 'Amiri', serif;
 }
+
+.bg-image{
+    background-image: url('https://cdn.pixabay.com/photo/2021/12/11/09/19/quran-6862296_960_720.jpg');
+    background-position: center;
+    background-size: cover;
+}

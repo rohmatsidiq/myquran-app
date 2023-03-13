@@ -1,9 +1,9 @@
-import axios from "axios";
 import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
 
 export default function Home() {
   const [surat, setSurat] = useState([]);
@@ -21,6 +21,7 @@ export default function Home() {
     <>
       <Navbar />
       <div className="max-w-[1080px] mx-auto px-3 py-4 mt-32">
+        <Hero />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {surat.map((e) => (
             <Link
@@ -29,12 +30,12 @@ export default function Home() {
               className="bg-white rounded-lg px-4 py-3 shadow-sm"
             >
               <div className="flex justify-between">
-                <h1 className="text-xl font-bold text-teal-500">{e.nomor}. {e.namaLatin}</h1>
-                <h1 className="font-arab text-3xl text-teal-500">
-                  {e.nama}
+                <h1 className="text-xl font-bold text-teal-500">
+                  {e.nomor}. {e.namaLatin}
                 </h1>
+                <h1 className="font-arab text-3xl text-teal-500">{e.nama}</h1>
               </div>
-                <hr />
+              <hr />
               <p className="">Artinya: {e.arti}</p>
               <p>Jumlah Ayat: {e.jumlahAyat}</p>
               <p>Tempat Turunnya di {e.tempatTurun}</p>
