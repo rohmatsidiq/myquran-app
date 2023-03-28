@@ -10,26 +10,30 @@ export default function Detail() {
   const [nama, setNama] = useState("");
   const [namaLatin, setNamaLatin] = useState("");
   const [arti, setArti] = useState("");
-  const [audioFull, setAudioFull] = useState({});
+  const [audioFull, setAudioFull] = useState("");
   const getDetail = async () => {
     const response = await axios(`https://equran.id/api/v2/surat/${nomor}`);
     setNama(response.data.data.nama);
     setArti(response.data.data.arti);
     setNamaLatin(response.data.data.namaLatin);
     setAyat(response.data.data.ayat);
+    setAudioFull(response.data.data.audioFull["05"]);
   };
   useEffect(() => {
     getDetail();
   }, []);
   return (
     <>
-      <div className="bg-teal-500 text-white py-3 fixed top-0 w-screen drop-shadow-lg">
+      <div className="bg-teal-500 text-white py-3 w-screen drop-shadow-lg">
         <h1 className="text-5xl text-center font-arab my-3">{nama}</h1>
         <p className="text-lg text-center">
           {namaLatin} - {arti}
         </p>
+        <div className="flex justify-center w-full mt-2">
+          <audio controls src={audioFull} preload="none"></audio>
+        </div>
       </div>
-      <div className="max-w-[1080px] mx-auto px-3 py-4 mt-28">
+      <div className="max-w-[1080px] mx-auto px-3 py-4">
         {ayat.map((e) => (
           <div
             key={e.nomorAyat}
