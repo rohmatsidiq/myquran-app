@@ -3,7 +3,7 @@
     "short_name": "My Qur'an",
     "theme_color": "#ffffffff",
     "background_color": "#ffffffff",
-    "display": "browser",
+    "display": "standalone",
     "orientation": "portrait",
     "scope": "/",
     "start_url": "/",
