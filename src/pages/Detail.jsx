@@ -22,6 +22,23 @@ export default function Detail() {
   useEffect(() => {
     getDetail();
   }, []);
+
+  useEffect(() => {
+    const handleBackButton = (event) => {
+      if (event.currentTarget.performance.navigation.type === 1) {
+        // Close the PWA app when user navigates back from another page
+        window.close();
+      }
+    };
+
+    // Add event listener to window.history for detecting back navigation
+    window.history.pushState(null, null, window.location.pathname);
+    window.addEventListener('popstate', handleBackButton);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, []);
   return (
     <>
       <div className="bg-teal-500 text-white py-3 w-screen drop-shadow-lg">
