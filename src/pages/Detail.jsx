@@ -104,6 +104,7 @@ export default function Detail() {
                   {e.nomorAyat}. {e.teksIndonesia}
                 </i>
               </p>
+              <button>test</button>
             </div>
           ))}
         </div>
