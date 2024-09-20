@@ -5,9 +5,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { FiBookmark } from "react-icons/fi";
-import { message } from "antd";
+import { message, Modal } from "antd";
+import { MdContentPasteSearch } from "react-icons/md";
 
 export default function Detail() {
+  const [open, setOpen] = useState(false);
   const { nomor } = useParams();
   const [ayat, setAyat] = useState([]);
   const [nama, setNama] = useState("");
@@ -16,11 +18,8 @@ export default function Detail() {
   const [audioFull, setAudioFull] = useState("");
   const [nomorSurat, setNomorSurat] = useState(0);
   const [allSurat, setAllSurat] = useState([]);
-  // const [bookmark, setBookmark] = useState(
-  //   localStorage.getItem("bookmark")
-  //     ? JSON.parse(localStorage.getItem("bookmark"))
-  //     : []
-  // );
+  const [tafsir, setTafsir] = useState([]);
+  const [viewTafsirByAyat, setViewTafsirByAyat] = useState(0);
 
   const getDetail = async () => {
     const response = await axios(`https://equran.id/api/v2/surat/${nomor}`);
@@ -35,6 +34,11 @@ export default function Detail() {
   const getAllSurat = async () => {
     const response = await axios("https://equran.id/api/v2/surat");
     setAllSurat(response.data.data);
+  };
+
+  const getTafsir = async () => {
+    const response = await axios("https://equran.id/api/v2/tafsir/" + nomor);
+    setTafsir(response.data.data.tafsir);
   };
 
   const handleBookmark = (ayat) => {
@@ -62,6 +66,7 @@ export default function Detail() {
   useEffect(() => {
     getDetail();
     getAllSurat();
+    getTafsir();
   }, [nomor]);
 
   useEffect(() => {
@@ -133,7 +138,7 @@ export default function Detail() {
           </div>
         </div>
         <div>
-          {ayat.map((e) => (
+          {ayat.map((e, i) => (
             <div
               id={`${nomorSurat}--${e.nomorAyat}`}
               key={e.nomorAyat}
@@ -147,21 +152,46 @@ export default function Detail() {
                   {e.nomorAyat}. {e.teksIndonesia}
                 </i>
               </p>
-              <div className="mt-3 flex justify-end">
+              <div className="mt-3 flex justify-end gap-2">
                 <button
                   onClick={() => {
                     handleBookmark(e.nomorAyat);
                   }}
                   title="Bookmark"
-                  className="bg-teal-400 hover:bg-teal-300 p-2 text-white rounded-full"
+                  className="bg-teal-400 hover:bg-teal-300 px-2 py-1 text-white rounded-full"
                 >
                   <FiBookmark />
+                </button>
+                <button
+                  onClick={() => {
+                    setViewTafsirByAyat(e.nomorAyat);
+                    setOpen(true);
+                  }}
+                  title="Tafsir"
+                  className="bg-sky-400 hover:bg-sky-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
+                >
+                  <MdContentPasteSearch /> Tafsir
                 </button>
               </div>
             </div>
           ))}
         </div>
       </div>
+      <Modal
+        title={`Tafsir ayat ${viewTafsirByAyat}`}
+        centered
+        open={open}
+        onOk={() => setOpen(false)}
+        onCancel={() => setOpen(false)}
+        width={1000}
+        footer={false}
+      >
+        {viewTafsirByAyat != 0 && (
+          <p style={{ whiteSpace: "pre-line" }}>
+            {tafsir.find((v) => v.ayat == viewTafsirByAyat).teks}
+          </p>
+        )}
+      </Modal>
     </div>
   );
 }
