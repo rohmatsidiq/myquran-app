@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* scroll bar untuk chrome safari */
+/* Mengatur lebar scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+/* Mengatur warna track (jalur) scrollbar */
+::-webkit-scrollbar-track {
+  background: #f1f1f100;
+  border-radius: 10px;
+  display: none;
+}
+
+/* Mengatur warna thumb (pegangan) scrollbar */
+::-webkit-scrollbar-thumb {
+  background: #88c3f6;
+  border-radius: 10px;
+}
+
+/* Mengatur warna thumb saat di-hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #3fa2f6;
+}

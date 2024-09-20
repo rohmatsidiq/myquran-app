@@ -7,7 +7,7 @@ export default function Navbar() {
 
   return (
     <div className="w-full z-50 bg-[#f7aa79] drop-shadow-lg fixed top-0 right-0 left-0 py-4">
-      <div className="max-w-[1080px] mx-auto text-white px-4">
+      <div className="text-white px-4">
         <div className="flex justify-between items-center gap-3">
           <Link to={"/"} className="text-2xl">
             MyQur'an
