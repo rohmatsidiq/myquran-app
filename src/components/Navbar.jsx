@@ -6,7 +6,7 @@ export default function Navbar() {
   const [menu, setMenu] = useState(false);
 
   return (
-    <div className="w-full z-50 bg-[#c38a37] drop-shadow-lg fixed top-0 right-0 left-0 py-4">
+    <div className="w-full z-50 bg-[#b78b72] drop-shadow-lg fixed top-0 right-0 left-0 py-4">
       <div className="max-w-[1080px] mx-auto text-white px-4">
         <div className="flex justify-between items-center gap-3">
           <Link to={"/"} className="text-2xl">
@@ -17,13 +17,13 @@ export default function Navbar() {
           </button>
           <div className="hidden md:flex gap-4">
             <Link
-              className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#c38a37]"
+              className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#b78b72]"
               to={"/"}
             >
               Home
             </Link>
             <Link
-              className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#c38a37]"
+              className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#b78b72]"
               to={"/bookmark"}
             >
               Bookmark
@@ -32,7 +32,7 @@ export default function Navbar() {
         </div>
       </div>
       {menu && (
-        <div className="bg-[#c38a37] w-screen min-h-screen fixed top-0 bottom-0 left-0 right-0 text-white flex flex-col justify-center items-center gap-4">
+        <div className="bg-[#b78b72] w-screen min-h-screen fixed top-0 bottom-0 left-0 right-0 text-white flex flex-col justify-center items-center gap-4">
           <Link
             onClick={() => {
               setMenu(false);
@@ -47,7 +47,7 @@ export default function Navbar() {
             onClick={() => {
               setMenu(false);
             }}
-            className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#c38a37]"
+            className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#b78b72]"
             to={"/"}
           >
             Home
@@ -56,7 +56,7 @@ export default function Navbar() {
             onClick={() => {
               setMenu(false);
             }}
-            className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#c38a37]"
+            className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#b78b72]"
             to={"/bookmark"}
           >
             Bookmark

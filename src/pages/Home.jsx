@@ -39,7 +39,7 @@ export default function Home() {
         <input
           onChange={(e) => setCari(e.target.value)}
           type="text"
-          className="w-full mb-4 px-4 py-2 rounded-full focus:outline-none focus:shadow focus:shadow-[#fff6f1]"
+          className="w-full mb-4 px-4 py-2 rounded-full focus:outline-none focus:shadow focus:shadow-[#fff6f1] hidden md:block"
           placeholder="Cari"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
