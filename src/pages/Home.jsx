@@ -52,8 +52,8 @@ export default function Home() {
               <div className="flex justify-between">
                 <div>
                   <div className="flex gap-3 items-center">
-                    <div className="w-10 h-10 border-2 border-[#b3856b]">
-                      <div className="w-10 h-10 border-2 border-[#b3856b] rotate-45 flex justify-center items-center">
+                    <div className="w-10 h-10 border-2 border-[#f7aa79]">
+                      <div className="w-10 h-10 border-2 border-[#f7aa79] rotate-45 flex justify-center items-center">
                         <p className="-rotate-45 font-bold">{e.nomor}</p>
                       </div>
                     </div>

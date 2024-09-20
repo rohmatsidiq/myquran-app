@@ -28,7 +28,7 @@ export default function Detail() {
 
   return (
     <>
-      <div className="bg-[#b3856b] text-white py-3 mb-3 p-5 rounded-3xl">
+      <div className="bg-[#f7aa79] text-white py-3 mb-3 p-5 rounded-3xl">
         <div className="flex justify-between">
           <div className="flex-row md:flex-col gap-3 items-center">
             <h1 className="text-xl font-arab my-3">{nama}</h1>
