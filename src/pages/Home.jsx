@@ -7,6 +7,7 @@ import Hero from "../components/Hero";
 
 export default function Home() {
   const [surat, setSurat] = useState([]);
+  const [cari, setCari] = useState("");
 
   const getSurat = async () => {
     const response = await axios("https://equran.id/api/v2/surat");
@@ -19,27 +20,70 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
-      <div className="max-w-[1080px] mx-auto px-3 py-4 mt-24">
+      <div>
         <Hero />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {surat.map((e) => (
-            <Link
-              key={e.nomor}
-              to={`/detail/${e.nomor}`}
-              className="bg-white rounded-lg px-4 py-3 shadow-sm"
-            >
-              <div className="flex justify-between">
-                <div>
-                  <h1 className="text-xl font-bold textblack">
-                    {e.nomor}. {e.namaLatin}
-                  </h1>
-                  <p>({e.arti})</p>
-                </div>
-                <h1 className="font-arab text-3xl textblack">{e.nama}</h1>
-              </div>
-            </Link>
-          ))}
+        <input
+          onChange={(e) => setCari(e.target.value)}
+          type="text"
+          className="w-full mb-4 px-4 py-2 rounded-full focus:outline-none focus:shadow focus:shadow-[#fff6f1]"
+          placeholder="Cari"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {cari != ""
+            ? surat
+                .filter(
+                  (f) =>
+                    f.namaLatin.toLowerCase().includes(cari) ||
+                    f.arti.toLowerCase().includes(cari)
+                )
+                .map((e) => (
+                  <Link
+                    key={e.nomor}
+                    to={`/detail/${e.nomor}`}
+                    className="bg-white hover:shadow-xl hover:shadow-[#fff6f1] rounded-3xl p-4"
+                  >
+                    <div className="flex justify-between">
+                      <div>
+                        <div className="flex gap-3 items-center">
+                          <div className="w-10 h-10 border-2 border-[#b3856b]">
+                            <div className="w-10 h-10 border-2 border-[#b3856b] rotate-45 flex justify-center items-center">
+                              <p className="-rotate-45 font-bold">{e.nomor}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <h1 className="font-bold">{e.namaLatin}</h1>
+                            <p>({e.arti})</p>
+                          </div>
+                        </div>
+                      </div>
+                      <h1 className="font-arab text-3xl">{e.nama}</h1>
+                    </div>
+                  </Link>
+                ))
+            : surat.map((e) => (
+                <Link
+                  key={e.nomor}
+                  to={`/detail/${e.nomor}`}
+                  className="bg-white hover:shadow-xl hover:shadow-[#fff6f1] rounded-3xl p-4"
+                >
+                  <div className="flex justify-between">
+                    <div>
+                      <div className="flex gap-3 items-center">
+                        <div className="w-10 h-10 border-2 border-[#b3856b]">
+                          <div className="w-10 h-10 border-2 border-[#b3856b] rotate-45 flex justify-center items-center">
+                            <p className="-rotate-45 font-bold">{e.nomor}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <h1 className="font-bold">{e.namaLatin}</h1>
+                          <small>({e.arti})</small>
+                        </div>
+                      </div>
+                    </div>
+                    <h1 className="font-arab text-3xl">{e.nama}</h1>
+                  </div>
+                </Link>
+              ))}
         </div>
       </div>
     </>
