@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { FiBookmark } from "react-icons/fi";
+import { message } from "antd";
 
 export default function Detail() {
   const { nomor } = useParams();
@@ -14,6 +16,12 @@ export default function Detail() {
   const [audioFull, setAudioFull] = useState("");
   const [nomorSurat, setNomorSurat] = useState(0);
   const [allSurat, setAllSurat] = useState([]);
+  // const [bookmark, setBookmark] = useState(
+  //   localStorage.getItem("bookmark")
+  //     ? JSON.parse(localStorage.getItem("bookmark"))
+  //     : []
+  // );
+
   const getDetail = async () => {
     const response = await axios(`https://equran.id/api/v2/surat/${nomor}`);
     setNama(response.data.data.nama);
@@ -29,10 +37,45 @@ export default function Detail() {
     setAllSurat(response.data.data);
   };
 
+  const handleBookmark = (ayat) => {
+    // Mendapatkan bookmark dari localStorage (jika ada)
+    const allBookmark = localStorage.getItem("bookmark")
+      ? JSON.parse(localStorage.getItem("bookmark"))
+      : [];
+
+    // Membuat objek bookmark baru
+    const addBookmark = {
+      nomor, // Nomor surat
+      surat: namaLatin, // Nama surat Latin
+      ayat: ayat, // Ayat yang di-bookmark
+    };
+
+    // Memasukkan bookmark baru ke array bookmark yang ada
+    allBookmark.push(addBookmark);
+
+    // Simpan array bookmark yang baru ke localStorage
+    localStorage.setItem("bookmark", JSON.stringify(allBookmark));
+
+    message.success("Berhasil menambahkan bookmark");
+  };
+
   useEffect(() => {
     getDetail();
     getAllSurat();
   }, [nomor]);
+
+  useEffect(() => {
+    // Mengatur scroll ke elemen berdasarkan hash setelah ayat dimuat
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100); // Menunggu 100ms sebelum scroll
+    }
+  }, [ayat]); // Pastikan ini dipanggil setelah `ayat` dimuat
 
   return (
     <div className="grid md:grid-cols-4 gap-3 h-full">
@@ -42,7 +85,7 @@ export default function Detail() {
       >
         {allSurat.map((e, i) => (
           <Link
-            to={"/detail/" + e.nomor}
+            to={"/detail/" + e.nomor + "#" + e.nomor + "--1"}
             id={`list--${nomor}`}
             className={`border flex gap-4 p-4 rounded-xl hover:bg-[#ffe3d1] ${
               nomor == e.nomor && "bg-[#ffe3d1]"
@@ -104,7 +147,17 @@ export default function Detail() {
                   {e.nomorAyat}. {e.teksIndonesia}
                 </i>
               </p>
-              <button>test</button>
+              <div className="mt-3 flex justify-end">
+                <button
+                  onClick={() => {
+                    handleBookmark(e.nomorAyat);
+                  }}
+                  title="Bookmark"
+                  className="bg-teal-400 hover:bg-teal-300 p-2 text-white rounded-full"
+                >
+                  <FiBookmark />
+                </button>
+              </div>
             </div>
           ))}
         </div>
