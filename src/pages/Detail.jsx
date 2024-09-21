@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { FiBookmark } from "react-icons/fi";
 import { message, Modal } from "antd";
 import { MdContentPasteSearch } from "react-icons/md";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheck, FaCheckCircle } from "react-icons/fa";
 
 export default function Detail() {
   const [open, setOpen] = useState(false);
@@ -163,10 +163,10 @@ export default function Detail() {
                   onClick={() => {
                     tandaiSelesaiBaca(e.nomorAyat);
                   }}
-                  title="Tafsir"
+                  title="Tandai Selesai Baca"
                   className="bg-purple-400 hover:bg-purple-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
                 >
-                  <FaCheckCircle /> Tandai Selesai Baca
+                  <FaCheck />
                 </button>
                 <button
                   onClick={() => {
@@ -175,7 +175,7 @@ export default function Detail() {
                   title="Bookmark"
                   className="bg-teal-400 hover:bg-teal-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
                 >
-                  <FiBookmark /> Bookmark
+                  <FiBookmark />
                 </button>
                 <button
                   onClick={() => {
