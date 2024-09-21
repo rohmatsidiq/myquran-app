@@ -10,6 +10,7 @@ export default function Home() {
   const [cari, setCari] = useState("");
   const [suratFiltered, setSuratFiltered] = useState([]);
   const navigate = useNavigate();
+  const tanda = localStorage.getItem("tanda");
 
   const getSurat = async () => {
     const response = await axios("https://equran.id/api/v2/surat");
@@ -17,15 +18,49 @@ export default function Home() {
     setSuratFiltered(response.data.data);
   };
 
-  const handleLanjutBaca = () => {
-    const tanda = localStorage.getItem("tanda");
+  const getNext = () => {
+    // return;
+    const nomorSuratTerakhir = parseInt(tanda.split("--")[0]);
+    const ayatTerakhir = parseInt(tanda.split("--")[1]); // misal 4
 
+    const jumlahAyatDalamSurat = surat.find(
+      (e) => e.nomor == nomorSuratTerakhir
+    ).jumlahAyat; //misal 128 ayat
+
+    if (ayatTerakhir < jumlahAyatDalamSurat) {
+      return {
+        nomorSuratSelanjutnya: nomorSuratTerakhir,
+        ayatSelanjutnya: ayatTerakhir + 1,
+      };
+    } else if (
+      ayatTerakhir >= jumlahAyatDalamSurat &&
+      nomorSuratTerakhir < 114
+    ) {
+      return {
+        nomorSuratSelanjutnya: nomorSuratTerakhir + 1,
+        ayatSelanjutnya: 1,
+      };
+    } else {
+      return {
+        nomorSuratSelanjutnya: 114,
+        ayatSelanjutnya: ayatTerakhir,
+      };
+    }
+  };
+
+  const handleLanjutBaca = () => {
     if (!tanda) {
       navigate("/detail/1");
       return;
     }
-
-    const newUrl = "/detail/" + tanda.split("--")[0] + "#" + tanda;
+    const next = getNext();
+    const newUrl =
+      "/detail/" +
+      next.nomorSuratSelanjutnya +
+      "#" +
+      next.nomorSuratSelanjutnya +
+      "--" +
+      next.ayatSelanjutnya;
     navigate(newUrl);
   };
 
