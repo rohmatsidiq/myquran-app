@@ -117,7 +117,7 @@ export default function Detail() {
           <div className="flex justify-between">
             <div className="flex-row md:flex-col gap-3 items-center">
               <h1 className="text-xl font-arab my-3">{nama}</h1>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <p className="text-lg text-center">{namaLatin}</p>
                 <p className="text-lg text-center">({arti})</p>
               </div>
