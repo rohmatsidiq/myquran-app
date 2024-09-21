@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 
@@ -9,6 +9,7 @@ export default function Home() {
   const [surat, setSurat] = useState([]);
   const [cari, setCari] = useState("");
   const [suratFiltered, setSuratFiltered] = useState([]);
+  const navigate = useNavigate();
 
   const getSurat = async () => {
     const response = await axios("https://equran.id/api/v2/surat");
@@ -20,14 +21,12 @@ export default function Home() {
     const tanda = localStorage.getItem("tanda");
 
     if (!tanda) {
-      // Mengganti URL tanpa reload
-      window.history.pushState(null, "", "/detail/1");
+      navigate("/detail/1");
       return;
     }
 
-    // Mengganti URL tanpa reload dengan fragment (#)
     const newUrl = "/detail/" + tanda.split("--")[0] + "#" + tanda;
-    window.history.pushState(null, "", newUrl);
+    navigate(newUrl);
   };
 
   useEffect(() => {
