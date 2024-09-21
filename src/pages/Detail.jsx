@@ -119,7 +119,7 @@ export default function Detail() {
               <h1 className="text-xl font-arab my-3">{nama}</h1>
               <div className="flex gap-2 flex-wrap">
                 <p className="text-lg text-center">{namaLatin}</p>
-                <p className="text-lg text-center">({arti})</p>
+                {arti && <p className="text-lg text-center">({arti})</p>}
               </div>
             </div>
             <div className="w-10 h-10 border-2 border-white mr-4 mt-4">
