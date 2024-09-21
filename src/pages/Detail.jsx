@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { FiBookmark } from "react-icons/fi";
 import { message, Modal } from "antd";
 import { MdContentPasteSearch } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
 
 export default function Detail() {
   const [open, setOpen] = useState(false);
@@ -61,6 +62,11 @@ export default function Detail() {
     localStorage.setItem("bookmark", JSON.stringify(allBookmark));
 
     message.success("Berhasil menambahkan bookmark");
+  };
+
+  const tandaiSelesaiBaca = (ayat) => {
+    localStorage.setItem("tanda", nomor + "--" + ayat);
+    message.success("Berhasil menandai selesai baca");
   };
 
   useEffect(() => {
@@ -155,12 +161,21 @@ export default function Detail() {
               <div className="mt-3 flex justify-end gap-2">
                 <button
                   onClick={() => {
+                    tandaiSelesaiBaca(e.nomorAyat);
+                  }}
+                  title="Tafsir"
+                  className="bg-purple-400 hover:bg-purple-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
+                >
+                  <FaCheckCircle /> Tandai Selesai Baca
+                </button>
+                <button
+                  onClick={() => {
                     handleBookmark(e.nomorAyat);
                   }}
                   title="Bookmark"
-                  className="bg-teal-400 hover:bg-teal-300 px-2 py-1 text-white rounded-full"
+                  className="bg-teal-400 hover:bg-teal-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
                 >
-                  <FiBookmark />
+                  <FiBookmark /> Bookmark
                 </button>
                 <button
                   onClick={() => {

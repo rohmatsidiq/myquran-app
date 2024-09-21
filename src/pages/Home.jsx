@@ -16,6 +16,18 @@ export default function Home() {
     setSuratFiltered(response.data.data);
   };
 
+  const handleLanjutBaca = () => {
+    const tanda = localStorage.getItem("tanda");
+    // return console.log(tanda.split("--")[0]);
+
+    if (!tanda) {
+      return (window.location.href = "/detail/1");
+    }
+
+    return (window.location.href =
+      "/detail/" + tanda.split("--")[0] + "#" + tanda);
+  };
+
   useEffect(() => {
     setSuratFiltered(
       cari == ""
@@ -36,12 +48,20 @@ export default function Home() {
     <div className="">
       <div>
         <Hero />
-        <input
-          onChange={(e) => setCari(e.target.value)}
-          type="text"
-          className="w-full mb-4 px-4 py-2 rounded-full focus:outline-none focus:shadow focus:shadow-[#fff6f1] hidden md:block"
-          placeholder="Cari"
-        />
+        <div className="mb-4 flex gap-3">
+          <input
+            onChange={(e) => setCari(e.target.value)}
+            type="text"
+            className="w-full px-4 py-2 rounded-full focus:outline-none focus:shadow focus:shadow-[#fff6f1] hidden md:block"
+            placeholder="Cari"
+          />
+          <button
+            onClick={handleLanjutBaca}
+            className="bg-[#f7aa79] hover:bg-[#fdb88d] text-white md:w-72 w-full flex justify-center items-center px-4 py-2 rounded-full"
+          >
+            Lanjutkan Membaca
+          </button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {suratFiltered.map((e) => (
             <Link
