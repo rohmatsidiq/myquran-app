@@ -18,14 +18,16 @@ export default function Home() {
 
   const handleLanjutBaca = () => {
     const tanda = localStorage.getItem("tanda");
-    // return console.log(tanda.split("--")[0]);
 
     if (!tanda) {
-      return (window.location.href = "/detail/1");
+      // Mengganti URL tanpa reload
+      window.history.pushState(null, "", "/detail/1");
+      return;
     }
 
-    return (window.location.href =
-      "/detail/" + tanda.split("--")[0] + "#" + tanda);
+    // Mengganti URL tanpa reload dengan fragment (#)
+    const newUrl = "/detail/" + tanda.split("--")[0] + "#" + tanda;
+    window.history.pushState(null, "", newUrl);
   };
 
   useEffect(() => {
