@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
+import Loading from "../components/Loading";
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
   const [surat, setSurat] = useState([]);
   const [cari, setCari] = useState("");
   const [suratFiltered, setSuratFiltered] = useState([]);
@@ -13,9 +15,11 @@ export default function Home() {
   const tanda = localStorage.getItem("tanda");
 
   const getSurat = async () => {
+    setLoading(true);
     const response = await axios("https://equran.id/api/v2/surat");
     setSurat(response.data.data);
     setSuratFiltered(response.data.data);
+    setLoading(false);
   };
 
   const getNext = () => {
@@ -82,6 +86,7 @@ export default function Home() {
 
   return (
     <div className="">
+      {loading && <Loading />}
       <div>
         <Hero />
         <div className="mb-4 flex gap-3">

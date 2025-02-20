@@ -8,6 +8,7 @@ import { FiBookmark } from "react-icons/fi";
 import { message, Modal } from "antd";
 import { MdContentPasteSearch } from "react-icons/md";
 import { FaCheck, FaCheckCircle } from "react-icons/fa";
+import Loading from "../components/Loading";
 
 export default function Detail() {
   const [open, setOpen] = useState(false);
@@ -21,8 +22,10 @@ export default function Detail() {
   const [allSurat, setAllSurat] = useState([]);
   const [tafsir, setTafsir] = useState([]);
   const [viewTafsirByAyat, setViewTafsirByAyat] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const getDetail = async () => {
+    setLoading(true);
     const response = await axios(`https://equran.id/api/v2/surat/${nomor}`);
     setNama(response.data.data.nama);
     setArti(response.data.data.arti);
@@ -30,16 +33,21 @@ export default function Detail() {
     setAyat(response.data.data.ayat);
     setNomorSurat(response.data.data.nomor);
     setAudioFull(response.data.data.audioFull["05"]);
+    setLoading(false);
   };
 
   const getAllSurat = async () => {
+    setLoading(true);
     const response = await axios("https://equran.id/api/v2/surat");
     setAllSurat(response.data.data);
+    setLoading(false);
   };
 
   const getTafsir = async () => {
+    setLoading(true);
     const response = await axios("https://equran.id/api/v2/tafsir/" + nomor);
     setTafsir(response.data.data.tafsir);
+    setLoading(false);
   };
 
   const handleBookmark = (ayat) => {
@@ -90,6 +98,7 @@ export default function Detail() {
 
   return (
     <div className="grid md:grid-cols-4 gap-3 h-full">
+      {loading && <Loading />}
       <div
         style={{ height: `calc(100vh - 92px)` }}
         className="bg-white rounded-3xl p-4 hidden md:flex overflow-y-scroll flex-col gap-3"
