@@ -28,7 +28,7 @@ export default function Home() {
     const ayatTerakhir = parseInt(tanda.split("--")[1]); // misal 4
 
     const jumlahAyatDalamSurat = surat.find(
-      (e) => e.nomor == nomorSuratTerakhir
+      (e) => e.nomor == nomorSuratTerakhir,
     ).jumlahAyat; //misal 128 ayat
 
     if (ayatTerakhir < jumlahAyatDalamSurat) {
@@ -75,8 +75,8 @@ export default function Home() {
         : surat.filter(
             (f) =>
               f.namaLatin.toLowerCase().includes(cari) ||
-              f.arti.toLowerCase().includes(cari)
-          )
+              f.arti.toLowerCase().includes(cari),
+          ),
     );
   }, [cari]);
 

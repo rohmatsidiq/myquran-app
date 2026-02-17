@@ -11,6 +11,8 @@ import { FaCheck, FaCheckCircle } from "react-icons/fa";
 import Loading from "../components/Loading";
 
 export default function Detail() {
+  const { confirm } = Modal;
+
   const [open, setOpen] = useState(false);
   const { nomor } = useParams();
   const [ayat, setAyat] = useState([]);
@@ -51,30 +53,55 @@ export default function Detail() {
   };
 
   const handleBookmark = (ayat) => {
-    // Mendapatkan bookmark dari localStorage (jika ada)
-    const allBookmark = localStorage.getItem("bookmark")
-      ? JSON.parse(localStorage.getItem("bookmark"))
-      : [];
+    confirm({
+      title: "Tambah Bookmark?",
+      content: `Yakin ingin bookmark surat ${namaLatin} ayat ${ayat}?`,
+      okText: "Ya",
+      cancelText: "Batal",
+      okButtonProps: {
+        style: {
+          backgroundColor: "#f7aa79",
+          borderColor: "#f7aa79",
+          color: "white",
+        },
+      },
+      onOk() {
+        const allBookmark = localStorage.getItem("bookmark")
+          ? JSON.parse(localStorage.getItem("bookmark"))
+          : [];
 
-    // Membuat objek bookmark baru
-    const addBookmark = {
-      nomor, // Nomor surat
-      surat: namaLatin, // Nama surat Latin
-      ayat: ayat, // Ayat yang di-bookmark
-    };
+        const addBookmark = {
+          nomor,
+          surat: namaLatin,
+          ayat: ayat,
+        };
 
-    // Memasukkan bookmark baru ke array bookmark yang ada
-    allBookmark.push(addBookmark);
+        allBookmark.push(addBookmark);
+        localStorage.setItem("bookmark", JSON.stringify(allBookmark));
 
-    // Simpan array bookmark yang baru ke localStorage
-    localStorage.setItem("bookmark", JSON.stringify(allBookmark));
-
-    message.success("Berhasil menambahkan bookmark");
+        message.success("Berhasil menambahkan bookmark");
+      },
+    });
   };
 
   const tandaiSelesaiBaca = (ayat) => {
-    localStorage.setItem("tanda", nomor + "--" + ayat);
-    message.success("Berhasil menandai selesai baca");
+    confirm({
+      title: "Tandai Selesai Baca?",
+      content: `Yakin ingin menandai surat ${namaLatin} ayat ${ayat} sebagai selesai dibaca?`,
+      okText: "Ya",
+      cancelText: "Batal",
+      okButtonProps: {
+        style: {
+          backgroundColor: "#f7aa79",
+          borderColor: "#f7aa79",
+          color: "white",
+        },
+      },
+      onOk() {
+        localStorage.setItem("tanda", nomor + "--" + ayat);
+        message.success("Berhasil menandai selesai baca");
+      },
+    });
   };
 
   useEffect(() => {
@@ -128,7 +155,10 @@ export default function Detail() {
         style={{ height: `calc(100vh - 92px)` }}
         className="col-span-1 md:col-span-3 overflow-y-scroll"
       >
-        <div className="bg-[#f7aa79] text-white py-3 mb-3 p-5 rounded-3xl">
+        <div
+          className="bg-[#f7aa79] text-white py-3 mb-3 p-5 rounded-3xl 
+                sticky top-0 z-10"
+        >
           <div className="flex justify-between">
             <div className="flex-row md:flex-col gap-3 items-center">
               <h1 className="text-xl font-arab my-3">{nama}</h1>
@@ -157,7 +187,7 @@ export default function Detail() {
             <div
               id={`${nomorSurat}--${e.nomorAyat}`}
               key={e.nomorAyat}
-              className="bg-white mb-3 py-4 px-5 rounded-3xl"
+              className="bg-white mb-3 py-4 px-5 rounded-3xl scroll-mt-44"
             >
               <p className="font-arab text-end my-5 text-2xl leading-[60px]">
                 {e.teksArab}
