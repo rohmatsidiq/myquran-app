@@ -180,7 +180,7 @@ export default function Detail() {
 
                 {/* Teks Arab */}
                 <p
-                  className="font-arab text-right text-2xl md:text-4xl leading-[2.5] md:leading-[3] text-gray-800 mb-8 tracking-normal"
+                  className="font-arab text-right text-3xl md:text-4xl leading-[2.5] md:leading-[3] text-gray-800 mb-8 tracking-normal"
                   dir="rtl"
                   style={{ wordSpacing: "5px" }} // Memberi jarak antar kata agar lebih jelas
                 >
