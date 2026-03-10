@@ -23,7 +23,7 @@ export default function Detail() {
   const [viewTafsirByAyat, setViewTafsirByAyat] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const currentFontSize = localStorage.getItem("fontSize") || 35;
+  const currentFontSize = localStorage.getItem("fontSize") || 26;
 
   // ... (getDetail & fetchDataPendukung tetap sama seperti kode Anda)
   const getDetail = async () => {
