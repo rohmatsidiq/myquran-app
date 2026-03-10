@@ -1,68 +1,102 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { TiThMenu } from "react-icons/ti";
+import { IoClose } from "react-icons/io5";
 
 export default function Navbar() {
   const [menu, setMenu] = useState(false);
+  const location = useLocation();
+
+  // Menutup menu mobile saat ganti halaman
+  useEffect(() => {
+    setMenu(false);
+  }, [location]);
+
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="w-full z-50 bg-[#f7aa79] drop-shadow-lg fixed top-0 right-0 left-0 py-4">
-      <div className="text-white px-4">
-        <div className="flex justify-between items-center gap-3">
-          <Link to={"/"} className="text-2xl">
+    <>
+      {/* Navbar Utama */}
+      <nav className="fixed top-0 left-0 right-0 h-16 bg-orange-400 shadow-md z-[100] flex flex-row items-center justify-between">
+        <div className="max-w-6xl px-4 mx-auto flex justify-between items-center w-full">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="text-xl md:text-2xl font-bold text-white flex items-center gap-2"
+          >
+            <div className="bg-white text-orange-400 w-8 h-8 flex items-center justify-center rounded-lg font-black shadow-sm">
+              Q
+            </div>
             MyQur'an
           </Link>
-          <button className="flex md:hidden" onClick={() => setMenu(!menu)}>
-            <TiThMenu className="text-3xl" />
-          </button>
-          <div className="hidden md:flex gap-4">
+
+          {/* Navigasi Desktop */}
+          <div className="hidden md:flex gap-2">
             <Link
-              className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#f7aa79]"
-              to={"/"}
+              to="/"
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                isActive("/")
+                  ? "bg-white text-orange-500 shadow-md"
+                  : "text-white hover:bg-orange-600"
+              }`}
             >
               Home
             </Link>
             <Link
-              className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#f7aa79]"
-              to={"/bookmark"}
+              to="/bookmark"
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                isActive("/bookmark")
+                  ? "bg-white text-orange-500 shadow-md"
+                  : "text-white hover:bg-orange-600"
+              }`}
             >
               Bookmark
             </Link>
           </div>
-        </div>
-      </div>
-      {menu && (
-        <div className="bg-[#f7aa79] w-screen min-h-screen fixed top-0 bottom-0 left-0 right-0 text-white flex flex-col justify-center items-center gap-4">
-          <Link
-            onClick={() => {
-              setMenu(false);
-            }}
-            to={"/"}
-            className="text-2xl"
+
+          {/* Tombol Mobile */}
+          <button
+            onClick={() => setMenu(true)}
+            className="md:hidden text-white text-3xl p-1"
           >
-            MyQur'an
-          </Link>
-          <hr className="w-36" />
+            <TiThMenu />
+          </button>
+        </div>
+      </nav>
+
+      {/* Menu Mobile Overlay - Dibuat Slide dari Kanan */}
+      <div
+        className={`fixed inset-0 z-[110] bg-orange-400 transition-transform duration-300 ease-in-out transform ${
+          menu ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center p-6 border-b border-orange-500">
+          <span className="text-white font-bold text-xl tracking-tight text-center w-full ml-8">
+            MENU
+          </span>
+          <button
+            onClick={() => setMenu(false)}
+            className="text-white text-4xl"
+          >
+            <IoClose />
+          </button>
+        </div>
+
+        <div className="flex flex-col p-6 gap-4">
           <Link
-            onClick={() => {
-              setMenu(false);
-            }}
-            className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#f7aa79]"
-            to={"/"}
+            to="/"
+            className={`text-2xl font-bold p-4 rounded-2xl ${isActive("/") ? "bg-white text-orange-600 shadow-lg" : "text-white"}`}
           >
             Home
           </Link>
           <Link
-            onClick={() => {
-              setMenu(false);
-            }}
-            className="hover:text-[#ffe3d3] hover:border-b-[#ffe3d3] border-b-2 border-b-[#f7aa79]"
-            to={"/bookmark"}
+            to="/bookmark"
+            className={`text-2xl font-bold p-4 rounded-2xl ${isActive("/bookmark") ? "bg-white text-orange-600 shadow-lg" : "text-white"}`}
           >
             Bookmark
           </Link>
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }

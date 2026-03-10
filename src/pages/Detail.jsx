@@ -1,251 +1,268 @@
 import axios from "axios";
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
-import { FiBookmark } from "react-icons/fi";
-import { message, Modal } from "antd";
+import React, { useEffect, useState, useRef } from "react";
+import { Link, useParams } from "react-router-dom";
+import { FiBookmark, FiList } from "react-icons/fi";
 import { MdContentPasteSearch } from "react-icons/md";
-import { FaCheck, FaCheckCircle } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
+import { message, Modal, Tooltip } from "antd";
 import Loading from "../components/Loading";
 
 export default function Detail() {
   const { confirm } = Modal;
+  const { nomor } = useParams();
+  const scrollRef = useRef(null); // Ref untuk div yang bisa scroll
 
   const [open, setOpen] = useState(false);
-  const { nomor } = useParams();
   const [ayat, setAyat] = useState([]);
   const [nama, setNama] = useState("");
   const [namaLatin, setNamaLatin] = useState("");
   const [arti, setArti] = useState("");
   const [audioFull, setAudioFull] = useState("");
-  const [nomorSurat, setNomorSurat] = useState(0);
   const [allSurat, setAllSurat] = useState([]);
   const [tafsir, setTafsir] = useState([]);
   const [viewTafsirByAyat, setViewTafsirByAyat] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  // ... (getDetail & fetchDataPendukung tetap sama seperti kode Anda)
   const getDetail = async () => {
     setLoading(true);
-    const response = await axios(`https://equran.id/api/v2/surat/${nomor}`);
-    setNama(response.data.data.nama);
-    setArti(response.data.data.arti);
-    setNamaLatin(response.data.data.namaLatin);
-    setAyat(response.data.data.ayat);
-    setNomorSurat(response.data.data.nomor);
-    setAudioFull(response.data.data.audioFull["05"]);
-    setLoading(false);
+    try {
+      const response = await axios(`https://equran.id/api/v2/surat/${nomor}`);
+      const data = response.data.data;
+      setNama(data.nama);
+      setArti(data.arti);
+      setNamaLatin(data.namaLatin);
+      setAyat(data.ayat);
+      setAudioFull(data.audioFull["05"]);
+    } catch (err) {
+      message.error("Gagal memuat data");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getAllSurat = async () => {
-    setLoading(true);
-    const response = await axios("https://equran.id/api/v2/surat");
-    setAllSurat(response.data.data);
-    setLoading(false);
-  };
-
-  const getTafsir = async () => {
-    setLoading(true);
-    const response = await axios("https://equran.id/api/v2/tafsir/" + nomor);
-    setTafsir(response.data.data.tafsir);
-    setLoading(false);
-  };
-
-  const handleBookmark = (ayat) => {
-    confirm({
-      title: "Tambah Bookmark?",
-      content: `Yakin ingin bookmark surat ${namaLatin} ayat ${ayat}?`,
-      okText: "Ya",
-      cancelText: "Batal",
-      okButtonProps: {
-        style: {
-          backgroundColor: "#f7aa79",
-          borderColor: "#f7aa79",
-          color: "white",
-        },
-      },
-      onOk() {
-        const allBookmark = localStorage.getItem("bookmark")
-          ? JSON.parse(localStorage.getItem("bookmark"))
-          : [];
-
-        const addBookmark = {
-          nomor,
-          surat: namaLatin,
-          ayat: ayat,
-        };
-
-        allBookmark.push(addBookmark);
-        localStorage.setItem("bookmark", JSON.stringify(allBookmark));
-
-        message.success("Berhasil menambahkan bookmark");
-      },
-    });
-  };
-
-  const tandaiSelesaiBaca = (ayat) => {
-    confirm({
-      title: "Tandai Selesai Baca?",
-      content: `Yakin ingin menandai surat ${namaLatin} ayat ${ayat} sebagai selesai dibaca?`,
-      okText: "Ya",
-      cancelText: "Batal",
-      okButtonProps: {
-        style: {
-          backgroundColor: "#f7aa79",
-          borderColor: "#f7aa79",
-          color: "white",
-        },
-      },
-      onOk() {
-        localStorage.setItem("tanda", nomor + "--" + ayat);
-        message.success("Berhasil menandai selesai baca");
-      },
-    });
+  const fetchDataPendukung = async () => {
+    try {
+      const resSurat = await axios("https://equran.id/api/v2/surat");
+      setAllSurat(resSurat.data.data);
+      const resTafsir = await axios(`https://equran.id/api/v2/tafsir/${nomor}`);
+      setTafsir(resTafsir.data.data.tafsir);
+    } catch (e) {}
   };
 
   useEffect(() => {
     getDetail();
-    getAllSurat();
-    getTafsir();
+    fetchDataPendukung();
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [nomor]);
 
   useEffect(() => {
-    // Mengatur scroll ke elemen berdasarkan hash setelah ayat dimuat
     const hash = window.location.hash;
-    if (hash) {
+    if (hash && ayat.length > 0) {
       setTimeout(() => {
-        const element = document.getElementById(hash.substring(1));
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
         }
-      }, 100); // Menunggu 100ms sebelum scroll
+      }, 700);
     }
-  }, [ayat]); // Pastikan ini dipanggil setelah `ayat` dimuat
+  }, [ayat]);
+
+  const handleBookmark = (nomorAyat) => {
+    confirm({
+      title: "Tambah Bookmark?",
+      content: `Simpan surat ${namaLatin} ayat ${nomorAyat}?`,
+      okText: "Ya",
+      okButtonProps: { className: "bg-[#f7aa79]" },
+      onOk() {
+        const list = JSON.parse(localStorage.getItem("bookmark") || "[]");
+        list.push({ nomor, surat: namaLatin, ayat: nomorAyat });
+        localStorage.setItem("bookmark", JSON.stringify(list));
+        message.success("Bookmark disimpan");
+      },
+    });
+  };
+
+  const tandaiSelesaiBaca = (nomorAyat) => {
+    confirm({
+      title: "Tandai Selesai Baca?",
+      content: `Jadikan ayat ${nomorAyat} sebagai titik terakhir baca?`,
+      okText: "Ya",
+      okButtonProps: { className: "bg-[#f7aa79]" },
+      onOk() {
+        localStorage.setItem("tanda", nomor + "--" + nomorAyat);
+        message.success("Berhasil ditandai");
+      },
+    });
+  };
 
   return (
-    <div className="grid md:grid-cols-4 gap-3 h-full">
+    <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-[#FDFCFB]">
       {loading && <Loading />}
-      <div
-        style={{ height: `calc(100vh - 92px)` }}
-        className="bg-white rounded-3xl p-4 hidden md:flex overflow-y-scroll flex-col gap-3"
-      >
-        {allSurat.map((e, i) => (
-          <Link
-            to={"/detail/" + e.nomor + "#" + e.nomor + "--1"}
-            id={`list--${nomor}`}
-            className={`border flex gap-4 p-4 rounded-xl hover:bg-[#ffe3d1] ${
-              nomor == e.nomor && "bg-[#ffe3d1]"
-            }`}
-            key={i}
-          >
-            <div className="w-10 h-10 border-2 border-[#f7aa79]">
-              <div className="w-10 h-10 border-2 border-[#f7aa79] rotate-45 flex justify-center items-center">
-                <p className="-rotate-45 font-bold">{e.nomor}</p>
-              </div>
-            </div>
-            <div>
-              <h3>{e.namaLatin}</h3>
-              <small>{e.arti}</small>
-            </div>
-          </Link>
-        ))}
-      </div>
-      <div
-        style={{ height: `calc(100vh - 92px)` }}
-        className="col-span-1 md:col-span-3 overflow-y-scroll"
-      >
-        <div
-          className="bg-[#f7aa79] text-white py-3 mb-3 p-5 rounded-3xl 
-                sticky top-0 z-10"
-        >
-          <div className="flex justify-between">
-            <div className="flex-row md:flex-col gap-3 items-center">
-              <h1 className="text-xl font-arab my-3">{nama}</h1>
-              <div className="flex gap-2 flex-wrap">
-                <p className="text-lg text-center">{namaLatin}</p>
-                {arti && <p className="text-lg text-center">({arti})</p>}
-              </div>
-            </div>
-            <div className="w-10 h-10 border-2 border-white mr-4 mt-4">
-              <div className="w-10 h-10 border-2 border-white rotate-45 flex justify-center items-center">
-                <p className="-rotate-45 font-bold">{nomor}</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-center w-full mt-5 mb-3">
-            <audio
-              controls
-              src={audioFull}
-              preload="none"
-              className="h-7 w-full"
-            ></audio>
-          </div>
+
+      {/* SIDEBAR - Tetap diam */}
+      <aside className="hidden md:flex flex-col w-72 bg-white border-r border-gray-100 h-full">
+        <div className="p-4 bg-orange-50 font-bold text-orange-800 border-b border-orange-100 flex items-center gap-2">
+          <FiList /> Daftar Surat
         </div>
-        <div>
-          {ayat.map((e, i) => (
-            <div
-              id={`${nomorSurat}--${e.nomorAyat}`}
-              key={e.nomorAyat}
-              className="bg-white mb-3 py-4 px-5 rounded-3xl scroll-mt-44"
+        <div className="overflow-y-auto flex-1 p-2 custom-scrollbar">
+          {allSurat.map((s) => (
+            <Link
+              key={s.nomor}
+              to={`/detail/${s.nomor}`}
+              className={`flex items-center gap-3 p-3 rounded-xl mb-1 transition-all ${
+                nomor == s.nomor
+                  ? "bg-orange-400 text-white shadow-md"
+                  : "hover:bg-orange-50 text-gray-700"
+              }`}
             >
-              <p className="font-arab text-end my-5 text-2xl leading-[60px]">
-                {e.teksArab}
-              </p>
-              <p>
-                <i>
-                  {e.nomorAyat}. {e.teksIndonesia}
-                </i>
-              </p>
-              <div className="mt-3 flex justify-end gap-2">
-                <button
-                  onClick={() => {
-                    tandaiSelesaiBaca(e.nomorAyat);
-                  }}
-                  title="Tandai Selesai Baca"
-                  className="bg-purple-400 hover:bg-purple-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
-                >
-                  <FaCheck />
-                </button>
-                <button
-                  onClick={() => {
-                    handleBookmark(e.nomorAyat);
-                  }}
-                  title="Bookmark"
-                  className="bg-teal-400 hover:bg-teal-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
-                >
-                  <FiBookmark />
-                </button>
-                <button
-                  onClick={() => {
-                    setViewTafsirByAyat(e.nomorAyat);
-                    setOpen(true);
-                  }}
-                  title="Tafsir"
-                  className="bg-sky-400 hover:bg-sky-300 px-2 py-1 text-white rounded-full flex justify-center items-center gap-1"
-                >
-                  <MdContentPasteSearch /> Tafsir
-                </button>
+              <span className="text-xs font-bold w-6 text-center">
+                {s.nomor}
+              </span>
+              <div className="flex-1 overflow-hidden">
+                <p className="font-bold text-sm truncate">{s.namaLatin}</p>
               </div>
-            </div>
+              <span className="font-arab text-lg">{s.nama}</span>
+            </Link>
           ))}
         </div>
-      </div>
+      </aside>
+
+      {/* AREA UTAMA */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* HEADER SURAT - Bagian yang diam (Tidak ikut scroll) */}
+        <div className="p-4 md:p-6 bg-white border-b border-gray-100 shadow-sm">
+          <div className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-3xl p-5 md:p-6 text-white shadow-lg relative overflow-hidden">
+            <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <h1 className="font-arab text-4xl md:text-5xl">{nama}</h1>
+                <div className="border-l border-white/30 pl-4">
+                  <h2 className="text-xl font-bold leading-tight">
+                    {namaLatin}
+                  </h2>
+                  <p className="text-orange-50 text-sm italic">"{arti}"</p>
+                </div>
+              </div>
+              <div className="w-full md:w-64 bg-white/20 backdrop-blur-md p-1.5 rounded-xl border border-white/30">
+                <audio
+                  src={audioFull}
+                  controls
+                  preload="none"
+                  className="w-full h-7 opacity-90 hover:opacity-100 transition-opacity"
+                >
+                  Browser Anda tidak mendukung elemen audio.
+                </audio>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* LIST AYAT - Hanya bagian ini yang bisa di-scroll */}
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-[#FDFCFB]"
+        >
+          <div className="max-w-4xl mx-auto space-y-6">
+            {ayat.map((e) => (
+              <div
+                key={e.nomorAyat}
+                id={`${nomor}--${e.nomorAyat}`}
+                className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow scroll-mt-10"
+              >
+                {/* Header Ayat (Hanya Nomor) */}
+                <div className="flex justify-start mb-6">
+                  <div className="w-10 h-10 bg-orange-50 text-orange-400 rounded-xl flex items-center justify-center font-bold border border-orange-100">
+                    {e.nomorAyat}
+                  </div>
+                </div>
+
+                {/* Teks Arab */}
+                <p
+                  className="font-arab text-right text-2xl md:text-4xl leading-[2.5] md:leading-[3] text-gray-800 mb-8 tracking-normal"
+                  dir="rtl"
+                  style={{ wordSpacing: "5px" }} // Memberi jarak antar kata agar lebih jelas
+                >
+                  {e.teksArab}
+                </p>
+
+                {/* Terjemahan */}
+                <div className="bg-gray-50 p-5 rounded-2xl border-l-4 border-orange-300 mb-6">
+                  <p className="text-gray-700 text-md leading-relaxed italic">
+                    {e.teksIndonesia}
+                  </p>
+                </div>
+
+                {/* Tombol Aksi - Sekarang di Bawah Terjemahan */}
+                <div className="flex flex-wrap justify-end gap-2 pt-4 border-t border-gray-50">
+                  <Tooltip title="Tandai Selesai">
+                    <button
+                      onClick={() => tandaiSelesaiBaca(e.nomorAyat)}
+                      className="p-2.5 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-600 hover:text-white transition-all flex items-center gap-2 font-medium text-sm"
+                    >
+                      <FaCheck size={16} />{" "}
+                      <span className="md:hidden lg:inline">Selesai</span>
+                    </button>
+                  </Tooltip>
+
+                  <Tooltip title="Bookmark">
+                    <button
+                      onClick={() => handleBookmark(e.nomorAyat)}
+                      className="p-2.5 bg-teal-50 text-teal-600 rounded-xl hover:bg-teal-600 hover:text-white transition-all flex items-center gap-2 font-medium text-sm"
+                    >
+                      <FiBookmark size={16} />{" "}
+                      <span className="md:hidden lg:inline">Simpan</span>
+                    </button>
+                  </Tooltip>
+
+                  <button
+                    onClick={() => {
+                      setViewTafsirByAyat(e.nomorAyat);
+                      setOpen(true);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-sky-50 text-sky-600 rounded-xl hover:bg-sky-600 hover:text-white transition-all font-bold text-sm shadow-sm"
+                  >
+                    <MdContentPasteSearch size={20} /> Tafsir
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Padding bawah agar ayat terakhir tidak terlalu nempel */}
+          <div className="h-20"></div>
+        </div>
+      </main>
+
       <Modal
-        title={`Tafsir ayat ${viewTafsirByAyat}`}
+        title={
+          <div className="font-bold text-orange-600">
+            Tafsir Ayat {viewTafsirByAyat}
+          </div>
+        }
         centered
         open={open}
-        onOk={() => setOpen(false)}
         onCancel={() => setOpen(false)}
-        width={1000}
-        footer={false}
+        footer={null}
+        width={700}
       >
-        {viewTafsirByAyat != 0 && (
-          <p style={{ whiteSpace: "pre-line" }}>
-            {tafsir.find((v) => v.ayat == viewTafsirByAyat).teks}
-          </p>
-        )}
+        <div className="py-4 text-gray-700 leading-loose text-lg whitespace-pre-line">
+          {tafsir.find((v) => v.ayat === viewTafsirByAyat)?.teks}
+        </div>
       </Modal>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #fbd38d;
+          border-radius: 10px;
+        }
+        .font-arab {
+          font-family: "Amiri", serif;
+        }
+      `}</style>
     </div>
   );
 }
