@@ -23,6 +23,8 @@ export default function Detail() {
   const [viewTafsirByAyat, setViewTafsirByAyat] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const currentFontSize = localStorage.getItem("fontSize") || 35;
+
   // ... (getDetail & fetchDataPendukung tetap sama seperti kode Anda)
   const getDetail = async () => {
     setLoading(true);
@@ -179,10 +181,17 @@ export default function Detail() {
                 </div>
 
                 {/* Teks Arab */}
-                <p
+                {/* <p
                   className="font-arab text-right text-2xl md:text-4xl leading-[2.5] md:leading-[3] text-gray-800 mb-8 tracking-normal"
                   dir="rtl"
                   style={{ wordSpacing: "5px" }} // Memberi jarak antar kata agar lebih jelas
+                >
+                  {e.teksArab}
+                </p> */}
+                <p
+                  className="font-arab text-right leading-[2.2] text-gray-800 mb-8"
+                  dir="rtl"
+                  style={{ fontSize: `${currentFontSize}px` }} // GUNAKAN STYLE INI
                 >
                   {e.teksArab}
                 </p>

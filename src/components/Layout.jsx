@@ -1,20 +1,23 @@
 import React from "react";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
+import NavMobile from "./NavMobile";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFCFB]">
-      {/* Navbar fixed di atas */}
+    <div className="min-h-screen bg-[#FDFCFB] flex flex-col">
+      {/* Navbar Desktop */}
       <Navbar />
 
-      {/* Kontainer Utama */}
-      <main className="flex-1 mt-16 overflow-x-hidden">
-        {/* mt-16 harus sama dengan h-16 pada Navbar agar pas */}
-        <div className="max-w-7xl mx-auto">
+      {/* Konten Utama: Beri pt-20 agar tidak tertutup Navbar Fixed */}
+      <main className="flex-1 pt-20 pb-20 md:pb-10">
+        <div className="max-w-7xl mx-auto px-4">
           <Outlet />
         </div>
       </main>
+
+      {/* Navigasi Mobile Bawah */}
+      <NavMobile />
     </div>
   );
 }
