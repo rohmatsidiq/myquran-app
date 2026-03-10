@@ -169,7 +169,7 @@ export default function Detail() {
               <div
                 key={e.nomorAyat}
                 id={`${nomor}--${e.nomorAyat}`}
-                className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow scroll-mt-10"
+                className="bg-white rounded-[2rem] p-6 md:p-10 border border-gray-100 shadow-sm hover:shadow-md transition-shadow scroll-mt-3"
               >
                 {/* Header Ayat (Hanya Nomor) */}
                 <div className="flex justify-start mb-6">
@@ -180,7 +180,7 @@ export default function Detail() {
 
                 {/* Teks Arab */}
                 <p
-                  className="font-arab text-right text-3xl md:text-4xl leading-[2.5] md:leading-[3] text-gray-800 mb-8 tracking-normal"
+                  className="font-arab text-right text-2xl md:text-4xl leading-[2.5] md:leading-[3] text-gray-800 mb-8 tracking-normal"
                   dir="rtl"
                   style={{ wordSpacing: "5px" }} // Memberi jarak antar kata agar lebih jelas
                 >

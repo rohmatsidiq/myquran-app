@@ -98,7 +98,7 @@ export default function Home() {
       <Hero />
 
       {/* 2. Main Content Wrapper */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-4">
         {/* 3. Search & Action Bar - Disederhanakan agar tidak berantakan */}
         <div className="flex flex-col md:flex-row items-center gap-4 mb-10">
           <div className="relative flex-1 w-full">
