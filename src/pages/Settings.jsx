@@ -76,7 +76,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] p-6 pb-24 font-sans">
+    <div className="min-h-screen bg-[#FDFCFB] p-6 font-sans">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <div className="p-3 bg-orange-100 text-orange-500 rounded-2xl">

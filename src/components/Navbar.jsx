@@ -51,6 +51,26 @@ export default function Navbar() {
             Surat
           </Link>
           <Link
+            to="/doa"
+            className={`font-bold text-sm transition-all ${
+              checkActive("/doa")
+                ? "text-orange-600 scale-105"
+                : "text-gray-500 hover:text-orange-400"
+            }`}
+          >
+            Doa
+          </Link>
+          <Link
+            to="/jadwal"
+            className={`font-bold text-sm transition-all ${
+              checkActive("/jadwal")
+                ? "text-orange-600 scale-105"
+                : "text-gray-500 hover:text-orange-400"
+            }`}
+          >
+            Jadwal Sholat
+          </Link>
+          <Link
             to="/bookmark"
             className={`p-2 rounded-xl transition-all shadow-sm ${
               checkActive("/bookmark")

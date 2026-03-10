@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { LoadingOutlined } from "@ant-design/icons";
 import {
   MdOutlineAccessTime,
   MdLocationOn,
@@ -68,7 +69,18 @@ export default function JadwalSholat() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh]">
-        <Spin size="large" />
+        <Spin
+          size="large"
+          // Menggunakan gaya inline agar pasti orange
+          style={{ color: "#fb923c" }}
+          // Atau jika ingin menggunakan icon custom:
+          indicator={
+            <LoadingOutlined style={{ fontSize: 40, color: "#fb923c" }} spin />
+          }
+        />
+        <p className="mt-4 text-orange-400 font-bold animate-pulse text-xs uppercase tracking-widest">
+          Menyinkronkan...
+        </p>
       </div>
     );
   }
@@ -105,7 +117,7 @@ export default function JadwalSholat() {
   const nextSholatName = getNextSholat();
 
   return (
-    <div className="p-4 md:p-8 max-w-2xl mx-auto pb-24 animate-in slide-in-from-bottom-4 duration-500">
+    <div className="p-4 md:p-8 max-w-2xl mx-auto pb-10 animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col items-center text-center mb-10">
         <div className="p-5 bg-orange-500 text-white rounded-[2rem] shadow-2xl shadow-orange-200 mb-6 animate-pulse">
           <MdOutlineAccessTime size={45} />
@@ -118,7 +130,7 @@ export default function JadwalSholat() {
         </p>
       </div>
 
-      <div className="mt-12 p-6 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 text-center">
+      <div className="mt-5 p-6 mb-5 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200 text-center">
         <p className="text-xs text-gray-400 font-bold uppercase tracking-[0.2em]">
           {jadwalHariIni?.hari}, {jadwalHariIni?.tanggal_lengkap}
         </p>

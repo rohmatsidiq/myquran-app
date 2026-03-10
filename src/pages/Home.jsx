@@ -72,22 +72,22 @@ export default function Home() {
   const features = [
     {
       title: "Baca Surat",
-      icon: <HiOutlineBookOpen size={26} />,
+      icon: <HiOutlineBookOpen className="text-[26px] sm:text-[36px]" />,
       path: "/surah",
     },
     {
       title: "Doa Harian",
-      icon: <MdOutlineMenuBook size={26} />,
+      icon: <MdOutlineMenuBook className="text-[26px] sm:text-[36px]" />,
       path: "/doa",
     },
     {
       title: "Jadwal",
-      icon: <MdOutlineAccessTime size={26} />,
+      icon: <MdOutlineAccessTime className="text-[26px] sm:text-[36px]" />,
       path: "/jadwal",
     },
     {
       title: "Bookmark",
-      icon: <MdOutlineBookmarkBorder size={26} />,
+      icon: <MdOutlineBookmarkBorder className="text-[26px] sm:text-[36px]" />,
       path: "/bookmark",
     },
   ];
@@ -154,7 +154,7 @@ export default function Home() {
                 {nextSholat.n}
               </span>
             </p>
-            <h1 className="text-7xl font-black mb-1 tracking-tighter italic">
+            <h1 className="text-5xl font-black mb-1 tracking-tighter italic">
               {nextSholat.w ? nextSholat.w : "--:--"}
             </h1>
             <Link
