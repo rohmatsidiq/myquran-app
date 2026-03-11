@@ -9,6 +9,8 @@ import {
   MdOutlineSettings,
   MdLocationOn,
   MdOutlineWavingHand,
+  MdOutlineInstallMobile,
+  MdClose,
 } from "react-icons/md";
 
 export default function Home() {
@@ -18,6 +20,42 @@ export default function Home() {
 
   const kota = localStorage.getItem("userKabKota");
   const provinsi = localStorage.getItem("userProvinsi");
+
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+
+  useEffect(() => {
+    // 1. Cek apakah sudah dalam mode aplikasi (standalone)
+    const isStandalone = window.matchMedia(
+      "(display-mode: standalone)",
+    ).matches;
+
+    // 2. Tangkap event instalasi
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      // Hanya munculkan banner jika belum terinstal
+      if (!isStandalone) {
+        setShowInstallBanner(true);
+      }
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+      setShowInstallBanner(false);
+    }
+  };
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -94,6 +132,39 @@ export default function Home() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 pb-12">
+      {/* BANNER INSTALASI PWA */}
+      {showInstallBanner && (
+        <div className="mt-4 animate-in slide-in-from-top-10 duration-500">
+          <div className="bg-gray-900 text-white p-4 rounded-[2rem] shadow-xl flex items-center justify-between gap-4 border border-gray-800">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center font-black text-lg shadow-lg shadow-orange-500/20">
+                Q
+              </div>
+              <div>
+                <h4 className="font-bold">Install MyQur'an</h4>
+                <p className="text-[9px] opacity-60 font-medium">
+                  Akses lebih cepat & ringan
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleInstallClick}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-[10px] font-black transition-all active:scale-95 flex items-center gap-1"
+              >
+                <MdOutlineInstallMobile size={14} /> INSTALL
+              </button>
+              <button
+                onClick={() => setShowInstallBanner(false)}
+                className="p-2 text-gray-500 hover:text-white"
+              >
+                <MdClose size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Greeting */}
       <div className="mt-6 mb-6 flex justify-between items-center px-1">
         <div>
