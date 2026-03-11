@@ -145,7 +145,7 @@ export default function Detail() {
                   {e.teksArab}
                 </p>
 
-                <div className="bg-gray-50/50 p-6 rounded-[2rem] border-l-4 border-orange-400 mb-8">
+                <div className="bg-gray-50/50 p-6 rounded-3xl border-l-4 border-orange-400 mb-8">
                   <p className="text-gray-600 text-base md:text-lg leading-relaxed font-medium">
                     {e.teksIndonesia}
                   </p>
