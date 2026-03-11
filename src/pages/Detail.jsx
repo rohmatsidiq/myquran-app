@@ -217,7 +217,7 @@ export default function Detail() {
                       setViewTafsirByAyat(e.nomorAyat);
                       setOpen(true);
                     }}
-                    className="px-6 py-3 bg-orange-50 text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all font-black text-xs uppercase tracking-widest shadow-sm flex items-center gap-2"
+                    className="p-3 bg-orange-50 text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all font-black text-xs uppercase tracking-widest shadow-sm flex items-center gap-2"
                   >
                     <MdContentPasteSearch size={18} /> Tafsir
                   </button>
