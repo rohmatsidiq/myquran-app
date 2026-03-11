@@ -25,6 +25,7 @@ export default function Detail() {
 
   const currentFontSize = localStorage.getItem("fontSize") || 26;
 
+  // 1. Ambil Detail Surat
   const getDetail = async () => {
     setLoading(true);
     try {
@@ -42,6 +43,7 @@ export default function Detail() {
     }
   };
 
+  // 2. Ambil Data Pendukung (Daftar Surat & Tafsir)
   const fetchDataPendukung = async () => {
     try {
       const resSurat = await axios("https://equran.id/api/v2/surat");
@@ -54,15 +56,58 @@ export default function Detail() {
   useEffect(() => {
     getDetail();
     fetchDataPendukung();
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [nomor]);
 
+  // 3. Logika Auto Scroll dari Hash (#)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && ayat.length > 0) {
+      setTimeout(() => {
+        const id = hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 800);
+    } else {
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    }
+  }, [ayat, nomor]);
+
+  // 4. Fitur Simpan Bookmark
+  const handleBookmark = (nomorAyat) => {
+    confirm({
+      title: "Tambah Bookmark?",
+      content: `Simpan surat ${namaLatin} ayat ${nomorAyat}?`,
+      okText: "Ya",
+      okButtonProps: { className: "bg-orange-500 border-none" },
+      onOk() {
+        const list = JSON.parse(localStorage.getItem("bookmark") || "[]");
+        list.push({ nomor, surat: namaLatin, ayat: nomorAyat });
+        localStorage.setItem("bookmark", JSON.stringify(list));
+        message.success("Bookmark disimpan");
+      },
+    });
+  };
+
+  // 5. Fitur Tandai Terakhir Baca
+  const tandaiSelesaiBaca = (nomorAyat) => {
+    confirm({
+      title: "Tandai Selesai Baca?",
+      content: `Jadikan ayat ${nomorAyat} sebagai titik terakhir baca?`,
+      okText: "Ya",
+      okButtonProps: { className: "bg-orange-500 border-none" },
+      onOk() {
+        localStorage.setItem("tanda", nomor + "--" + nomorAyat);
+        message.success("Berhasil ditandai");
+      },
+    });
+  };
+
   return (
-    /* h-screen & overflow-hidden di sini SANGAT PENTING untuk membuang scrollbar luar */
     <div className="flex h-screen overflow-hidden bg-[#FDFCFB] fixed inset-0 top-16 md:top-0 md:relative">
       {loading && <Loading />}
 
-      {/* SIDEBAR */}
       <aside className="hidden md:flex flex-col w-72 bg-white border-r border-gray-100 h-full">
         <div className="p-4 bg-orange-50 font-bold text-orange-800 border-b border-orange-100 flex items-center gap-2">
           <FiList /> Daftar Surat
@@ -81,8 +126,8 @@ export default function Detail() {
               <span className="text-xs font-bold w-6 text-center">
                 {s.nomor}
               </span>
-              <div className="flex-1 overflow-hidden">
-                <p className="font-bold text-sm truncate">{s.namaLatin}</p>
+              <div className="flex-1 overflow-hidden font-bold text-sm truncate">
+                {s.namaLatin}
               </div>
               <span className="font-arab text-lg">{s.nama}</span>
             </Link>
@@ -90,17 +135,15 @@ export default function Detail() {
         </div>
       </aside>
 
-      {/* AREA UTAMA */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* HEADER SURAT - Bagian yang benar-benar diam */}
         <div className="bg-white border-b border-gray-100 shadow-sm p-4 md:p-6 z-10">
           <div className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-[2rem] p-5 md:p-8 text-white shadow-lg relative overflow-hidden">
             <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-5">
-                <h1 className="font-arab text-4xl md:text-5xl">{nama}</h1>
+                <h1 className="font-arab text-5xl md:text-6xl">{nama}</h1>
                 <div className="border-l border-white/30 pl-5">
-                  <h2 className="text-xl font-bold leading-tight">
+                  <h2 className="text-2xl font-black leading-tight">
                     {namaLatin}
                   </h2>
                   <p className="text-orange-50 text-sm italic opacity-90">
@@ -119,7 +162,6 @@ export default function Detail() {
           </div>
         </div>
 
-        {/* LIST AYAT - Hanya area ini yang memiliki scrollbar */}
         <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-[#FDFCFB] pb-32"
@@ -152,26 +194,32 @@ export default function Detail() {
                 </div>
 
                 <div className="flex flex-wrap justify-end gap-3 pt-6 border-t border-gray-50">
-                  <button
-                    onClick={() => tandaiSelesaiBaca(e.nomorAyat)}
-                    className="p-3 bg-purple-50 text-purple-600 rounded-2xl hover:bg-purple-600 font-bold text-xs uppercase transition-all"
-                  >
-                    Selesai
-                  </button>
-                  <button
-                    onClick={() => handleBookmark(e.nomorAyat)}
-                    className="p-3 bg-teal-50 text-teal-600 rounded-2xl hover:bg-teal-600 font-bold text-xs uppercase transition-all"
-                  >
-                    Simpan
-                  </button>
+                  <Tooltip title="Tandai Selesai">
+                    <button
+                      onClick={() => tandaiSelesaiBaca(e.nomorAyat)}
+                      className="p-3 bg-purple-50 text-purple-600 rounded-2xl hover:bg-purple-600 hover:text-white transition-all flex items-center gap-2 font-bold text-xs uppercase"
+                    >
+                      <FaCheck size={14} /> Selesai
+                    </button>
+                  </Tooltip>
+
+                  <Tooltip title="Simpan Bookmark">
+                    <button
+                      onClick={() => handleBookmark(e.nomorAyat)}
+                      className="p-3 bg-teal-50 text-teal-600 rounded-2xl hover:bg-teal-600 hover:text-white transition-all flex items-center gap-2 font-bold text-xs uppercase"
+                    >
+                      <FiBookmark size={14} /> Simpan
+                    </button>
+                  </Tooltip>
+
                   <button
                     onClick={() => {
                       setViewTafsirByAyat(e.nomorAyat);
                       setOpen(true);
                     }}
-                    className="px-6 py-3 bg-orange-50 text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all font-black text-xs uppercase tracking-widest shadow-sm"
+                    className="px-6 py-3 bg-orange-50 text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all font-black text-xs uppercase tracking-widest shadow-sm flex items-center gap-2"
                   >
-                    Tafsir
+                    <MdContentPasteSearch size={18} /> Tafsir
                   </button>
                 </div>
               </div>
@@ -180,7 +228,23 @@ export default function Detail() {
         </div>
       </main>
 
-      {/* Modal & Style tetap sama */}
+      <Modal
+        title={
+          <div className="font-black text-orange-600 uppercase tracking-widest text-sm py-2">
+            Tafsir Ayat {viewTafsirByAyat}
+          </div>
+        }
+        centered
+        open={open}
+        onCancel={() => setOpen(false)}
+        footer={null}
+        width={800}
+      >
+        <div className="py-6 px-2 text-gray-700 leading-loose text-lg whitespace-pre-line font-medium">
+          {tafsir.find((v) => v.ayat === viewTafsirByAyat)?.teks}
+        </div>
+      </Modal>
+
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 5px;
