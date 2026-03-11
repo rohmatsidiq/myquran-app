@@ -6,6 +6,7 @@ import {
   MdKeyboardArrowDown,
   MdKeyboardArrowUp,
 } from "react-icons/md";
+import { LoadingOutlined } from "@ant-design/icons";
 import { Spin, Empty } from "antd";
 
 export default function Doa() {
@@ -81,8 +82,22 @@ export default function Doa() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Spin size="large" strokeColor="#f97316" />
+          <div className="flex flex-col items-center justify-center h-[70vh]">
+            <Spin
+              size="large"
+              // Menggunakan gaya inline agar pasti orange
+              style={{ color: "#fb923c" }}
+              // Atau jika ingin menggunakan icon custom:
+              indicator={
+                <LoadingOutlined
+                  style={{ fontSize: 40, color: "#fb923c" }}
+                  spin
+                />
+              }
+            />
+            <p className="mt-4 text-orange-400 font-bold animate-pulse text-xs uppercase tracking-widest">
+              Memuat...
+            </p>
           </div>
         ) : filteredDoa.length === 0 ? (
           <div className="bg-white p-12 rounded-[2.5rem] text-center border border-gray-100 shadow-sm">

@@ -155,6 +155,8 @@ export default function Detail() {
                 <audio
                   src={audioFull}
                   controls
+                  preload="none"
+                  controlsList="nodownload"
                   className="w-full h-8 opacity-90"
                 />
               </div>
@@ -193,7 +195,7 @@ export default function Detail() {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap justify-end gap-3 pt-6 border-t border-gray-50">
+                <div className="flex flex-wrap justify-end gap-1 pt-6 border-t border-gray-50">
                   <Tooltip title="Tandai Selesai">
                     <button
                       onClick={() => tandaiSelesaiBaca(e.nomorAyat)}
