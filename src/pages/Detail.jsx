@@ -165,7 +165,7 @@ export default function Detail() {
         </div>
 
         <div
-          ref={scrollRef}
+          // ref={scrollRef}
           className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar bg-[#FDFCFB] pb-32"
         >
           <div className="max-w-4xl mx-auto space-y-8 pt-2">
@@ -182,20 +182,20 @@ export default function Detail() {
                 </div>
 
                 <p
-                  className="font-arab text-right leading-[2.5] text-gray-800 mb-10 tracking-wide"
+                  className="font-arab text-right leading-[2.5] text-gray-800 mb-8 tracking-wide"
                   dir="rtl"
                   style={{ fontSize: `${currentFontSize}px` }}
                 >
                   {e.teksArab}
                 </p>
 
-                <div className="bg-gray-50/50 p-6 rounded-3xl border-l-4 border-orange-400 mb-8">
+                <div className="pl-6 border-l-4 border-orange-400 mb-8">
                   <p className="text-gray-600 text-base md:text-lg leading-relaxed">
                     {e.teksIndonesia}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap justify-end gap-1 pt-6 border-t border-gray-50">
+                <div className="flex flex-wrap justify-end gap-1  border-gray-50">
                   <Tooltip title="Tandai Selesai">
                     <button
                       onClick={() => tandaiSelesaiBaca(e.nomorAyat)}
