@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { HiOutlineBookOpen } from "react-icons/hi";
 import {
-  MdOutlineAccessTime,
-  MdOutlineBookmarkBorder,
-  MdOutlineMenuBook,
   MdOutlineSettings,
   MdLocationOn,
   MdOutlineWavingHand,
   MdOutlineInstallMobile,
   MdClose,
+  MdOutlineMenuBook,
 } from "react-icons/md";
+import { FaBookmark, FaPlay } from "react-icons/fa";
+import NavMobile from "../components/NavMobile";
 
 export default function Home() {
+  const navigate = useNavigate();
   const [nextSholat, setNextSholat] = useState({ n: "-", w: "--:--" });
   const [loading, setLoading] = useState(true);
   const [greeting, setGreeting] = useState("");
 
+  // State untuk Doa Harian Random
+  const [randomDoa, setRandomDoa] = useState(null);
+
   const kota = localStorage.getItem("userKabKota");
   const provinsi = localStorage.getItem("userProvinsi");
+  const tanda = localStorage.getItem("tanda");
 
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -47,10 +51,8 @@ export default function Home() {
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
-
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-
     if (outcome === "accepted") {
       setDeferredPrompt(null);
       setShowInstallBanner(false);
@@ -65,8 +67,22 @@ export default function Home() {
     else setGreeting("Selamat Malam");
   }, []);
 
+  // Fetch Jadwal Sholat & Doa Harian
   useEffect(() => {
-    const fetchJadwal = async () => {
+    const fetchData = async () => {
+      // Ambil data Doa Harian (Contoh API Doa)
+      try {
+        const resDoa = await axios("https://api-reciter.vercel.app/doa"); // atau endpoint doa yang Anda gunakan
+        // Ambil random doa
+        const listDoa = resDoa.data;
+        if (listDoa && listDoa.length > 0) {
+          const randomIndex = Math.floor(Math.random() * listDoa.length);
+          setRandomDoa(listDoa[randomIndex]);
+        }
+      } catch (e) {
+        // Fallback jika API doa berbeda
+      }
+
       if (!kota || !provinsi) {
         setLoading(false);
         return;
@@ -94,7 +110,7 @@ export default function Home() {
           const next = times.find((t) => {
             const [h, m] = t.w.split(":").map(Number);
             return h * 60 + m > currentMinutes;
-          }) || { n: "Subuh", w: jadwal.subuh }; // Default ke Subuh jika sudah lewat Isya
+          }) || { n: "Subuh", w: jadwal.subuh };
 
           setNextSholat(next);
         }
@@ -104,34 +120,23 @@ export default function Home() {
         setLoading(false);
       }
     };
-    fetchJadwal();
+    fetchData();
   }, [kota, provinsi]);
 
-  const features = [
-    {
-      title: "Baca Surat",
-      icon: <HiOutlineBookOpen className="text-[26px] sm:text-[36px]" />,
-      path: "/surah",
-    },
-    {
-      title: "Doa Harian",
-      icon: <MdOutlineMenuBook className="text-[26px] sm:text-[36px]" />,
-      path: "/doa",
-    },
-    {
-      title: "Jadwal",
-      icon: <MdOutlineAccessTime className="text-[26px] sm:text-[36px]" />,
-      path: "/jadwal",
-    },
-    {
-      title: "Bookmark",
-      icon: <MdOutlineBookmarkBorder className="text-[26px] sm:text-[36px]" />,
-      path: "/bookmark",
-    },
-  ];
+  // Handler Lanjut Baca
+  const handleLanjutBaca = () => {
+    if (!tanda) {
+      navigate("/detail/1");
+      return;
+    }
+    const [nomorSuratTerakhir, ayatTerakhir] = tanda.split("--").map(Number);
+    navigate(
+      `/detail/${nomorSuratTerakhir}#${nomorSuratTerakhir}--${ayatTerakhir}`,
+    );
+  };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 pb-12">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 pb-10 md:pb-0 max-w-6xl mx-auto">
       {/* BANNER INSTALASI PWA */}
       {showInstallBanner && (
         <div className="mt-4 animate-in slide-in-from-top-10 duration-500">
@@ -141,8 +146,8 @@ export default function Home() {
                 Q
               </div>
               <div>
-                <h4 className="font-bold">Install MyQur'an</h4>
-                <p className="text-[9px] opacity-60 font-medium">
+                <h4 className="font-bold text-sm">Install MyQur'an</h4>
+                <p className="text-[10px] opacity-60 font-medium">
                   Akses lebih cepat & ringan
                 </p>
               </div>
@@ -183,114 +188,107 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* DASHBOARD SHOLAT NEXT SAJA */}
-      {!kota || !provinsi ? (
-        <div className="p-8 bg-gray-900 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col items-center text-center">
-          <div className="absolute top-[-20px] left-[-20px] w-32 h-32 bg-orange-500/20 rounded-full blur-2xl"></div>
-          <div className="relative z-10">
-            <MdLocationOn
-              className="text-orange-400 mx-auto mb-3 animate-bounce"
-              size={32}
-            />
-            <h3 className="text-lg font-bold mb-1 tracking-tight">
-              Lokasi Belum Diatur
-            </h3>
-            <p className="text-[10px] opacity-50 mb-6 uppercase font-bold tracking-widest">
-              Pilih wilayah Anda
-            </p>
-            <Link
-              to="/settings"
-              className="bg-orange-500 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-900/40 active:scale-95 transition-all"
-            >
-              Atur Sekarang
-            </Link>
-          </div>
-        </div>
-      ) : loading ? (
-        <div className="h-52 bg-gray-50 rounded-[2.5rem] animate-pulse flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        <div className="p-8 bg-orange-500 rounded-[2.5rem] text-white shadow-2xl shadow-orange-200 relative overflow-hidden flex flex-col items-center text-center">
-          <div className="absolute top-[-20px] left-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-          <div className="absolute bottom-[-40px] right-[-40px] w-48 h-48 bg-black/5 rounded-full blur-3xl"></div>
-
-          <div className="relative z-10">
-            <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-70 mb-2 flex items-center justify-center gap-1">
-              {kota}
-            </p>
-            <p className="text-sm font-bold opacity-90 mb-8">
-              Menjelang waktu{" "}
-              <span className="underline decoration-white/40 underline-offset-8">
-                {nextSholat.n}
-              </span>
-            </p>
-            <h1 className="text-5xl font-black mb-1 tracking-tighter italic">
-              {nextSholat.w ? nextSholat.w : "--:--"}
-            </h1>
-            <Link
-              to="/jadwal"
-              className="mt-8 inline-block bg-white/20 hover:bg-white/30 backdrop-blur-md px-8 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/20 active:scale-95"
-            >
-              Detail Jadwal
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* MENU GRID */}
-      <div className="mt-10 px-1">
-        <div className="grid grid-cols-4 gap-4">
-          {features.map((f, i) => (
-            <Link
-              key={i}
-              to={f.path}
-              className="flex flex-col items-center gap-3 group"
-            >
-              <div className="bg-white w-full aspect-square rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-all duration-500 group-active:scale-90 shadow-orange-100/10">
-                {f.icon}
+      {/* GRID UTAMA: Jadwal Sholat & Quick Last Read Card */}
+      <div className="grid grid-cols-1 gap-4">
+        {/* DASHBOARD SHOLAT NEXT SAJA (Memakan 2 Kolom) */}
+        <div className="md:col-span-2">
+          {!kota || !provinsi ? (
+            <div className="p-8 bg-gray-900 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col items-center text-center h-full justify-center">
+              <div className="absolute top-[-20px] left-[-20px] w-32 h-32 bg-orange-500/20 rounded-full blur-2xl"></div>
+              <div className="relative z-10">
+                <MdLocationOn
+                  className="text-orange-400 mx-auto mb-3 animate-bounce"
+                  size={32}
+                />
+                <h3 className="text-lg font-bold mb-1 tracking-tight">
+                  Lokasi Belum Diatur
+                </h3>
+                <p className="text-[10px] opacity-50 mb-6 uppercase font-bold tracking-widest">
+                  Pilih wilayah Anda
+                </p>
+                <Link
+                  to="/settings"
+                  className="bg-orange-500 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-900/40 active:scale-95 transition-all"
+                >
+                  Atur Sekarang
+                </Link>
               </div>
-              <span className="font-black text-gray-400 text-[9px] uppercase tracking-tighter group-hover:text-orange-500 transition-colors">
-                {f.title}
-              </span>
-            </Link>
-          ))}
-        </div>
-
-        {/* AYAT HARI INI */}
-        <div className="mt-12 group">
-          <div className="p-8 bg-white border border-gray-50 rounded-[3rem] shadow-xl shadow-gray-200/20 relative overflow-hidden">
-            <div className="flex justify-between items-center mb-10">
-              <span className="px-4 py-1.5 bg-orange-50 text-orange-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
-                Ayat Hari Ini
-              </span>
-              <MdOutlineBookmarkBorder size={20} className="text-orange-200" />
             </div>
-
-            <div className="text-center md:text-left">
-              <p
-                className="font-arab text-4xl text-gray-800 leading-[2.2] mb-8 text-right"
-                dir="rtl"
-              >
-                فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ
-              </p>
-              <p className="italic text-gray-500 text-lg leading-relaxed border-l-[3px] border-orange-400 pl-4 py-1">
-                "Maka nikmat Tuhanmu yang manakah yang kamu dustakan?"
-              </p>
-              <p className="mt-8 text-[10px] font-black text-orange-300 uppercase tracking-[0.3em] text-center">
-                Surat Ar-Rahman : 13
-              </p>
+          ) : loading ? (
+            <div className="h-52 bg-gray-50 rounded-[2.5rem] animate-pulse flex items-center justify-center">
+              <div className="w-8 h-8 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
             </div>
-          </div>
-        </div>
+          ) : (
+            <div className="p-8 bg-orange-500 rounded-[2.5rem] text-white shadow-xl shadow-orange-200 relative overflow-hidden flex flex-col items-center text-center justify-between h-full">
+              <div className="absolute top-[-20px] left-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-[-40px] right-[-40px] w-48 h-48 bg-black/5 rounded-full blur-3xl"></div>
 
-        {/* FOOTER */}
-        <div className="mt-16 text-center">
-          <p className="text-[9px] text-gray-300 font-black uppercase tracking-[0.8em]">
-            MyQur'an App
-          </p>
+              <div className="relative z-10 w-full">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] opacity-70 mb-2">
+                  {kota}
+                </p>
+                <p className="text-sm font-bold opacity-90 mb-4">
+                  Menjelang waktu{" "}
+                  <span className="underline decoration-white/40 underline-offset-8">
+                    {nextSholat.n}
+                  </span>
+                </p>
+                <h1 className="text-5xl font-black mb-4 tracking-tighter italic">
+                  {nextSholat.w ? nextSholat.w : "--:--"}
+                </h1>
+                <div>
+                  <Link
+                    to="/jadwal"
+                    className="inline-block bg-white/20 hover:bg-white/30 backdrop-blur-md px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/20 active:scale-95"
+                  >
+                    Lihat Jadwal Lengkap
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* AYAT TENTANG PENURUNAN AL-QUR'AN (AL-BAQARAH: 185) */}
+      <div className="mt-6">
+        <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-xl shadow-gray-200/20 relative overflow-hidden">
+          <div className="flex justify-between items-center mb-6">
+            <span className="px-4 py-1.5 bg-orange-50 text-orange-500 rounded-xl text-[10px] font-black uppercase tracking-widest">
+              Pilihan Ayat
+            </span>
+            <FaBookmark className="text-orange-200" size={18} />
+          </div>
+
+          <div className="text-center md:text-left">
+            <p
+              className="font-arab text-3xl sm:text-4xl text-gray-800 leading-[2.5] mb-6 text-right"
+              dir="rtl"
+            >
+              شَهْرُ رَمَضَانَ الَّذِي أُنزِلَ فِيهِ الْقُرْآنُ هُدًى لِلنَّاسِ
+              وَبَيِّنَاتٍ مِّنَ الْهُدَىٰ وَالْفُرْقَانِ
+            </p>
+            <p className="italic text-gray-600 text-base sm:text-lg leading-relaxed py-1">
+              "Bulan Ramadan adalah (bulan) yang di dalamnya diturunkan
+              Al-Qur'an, sebagai petunjuk bagi manusia dan penjelasan-penjelasan
+              mengenai petunjuk itu serta pembeda (antara yang hak dan yang
+              batil)..."
+            </p>
+            <p className="mt-6 text-[10px] font-black text-orange-400 uppercase tracking-[0.3em] text-center md:text-left">
+              Surat Al-Baqarah : 185
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="mt-12 text-center">
+        <p className="text-[9px] text-gray-300 font-black uppercase tracking-[0.8em]">
+          MyQur'an App
+        </p>
+      </div>
+
+      <NavMobile />
     </div>
   );
 }

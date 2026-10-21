@@ -1,14 +1,17 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HiOutlineHome, HiOutlineBookOpen } from "react-icons/hi";
 import {
   MdOutlineAccessTime,
   MdOutlineMenuBook,
   MdOutlineSettings,
 } from "react-icons/md";
+import { FaPlay } from "react-icons/fa"; // Menggunakan ikon play/lanjut
 
 export default function NavMobile() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const tanda = localStorage.getItem("tanda");
 
   const checkActive = (path) => {
     if (path === "/") return pathname === "/";
@@ -18,49 +21,96 @@ export default function NavMobile() {
     return pathname.startsWith(path);
   };
 
-  const menus = [
-    { name: "Home", path: "/", icon: <HiOutlineHome size={24} /> },
-    { name: "Surat", path: "/surah", icon: <HiOutlineBookOpen size={24} /> },
-    { name: "Doa", path: "/doa", icon: <MdOutlineMenuBook size={24} /> },
-    {
-      name: "Jadwal",
-      path: "/jadwal",
-      icon: <MdOutlineAccessTime size={24} />,
-    },
-    { name: "Set", path: "/settings", icon: <MdOutlineSettings size={24} /> },
-  ];
+  // Logika hitung ayat selanjutnya (sama seperti di Surah.jsx)
+  const handleLanjutBaca = () => {
+    if (!tanda) {
+      navigate("/detail/1");
+      return;
+    }
+
+    const [nomorSuratTerakhir, ayatTerakhir] = tanda.split("--").map(Number);
+
+    // Karena kita butuh jumlah ayat, kita arahkan ke surat terakhirnya atau fallback aman
+    // Jika data surat tersimpan atau langsung oper parameter url hash-nya:
+    const newUrl = `/detail/${nomorSuratTerakhir}#${nomorSuratTerakhir}--${ayatTerakhir}`;
+    navigate(newUrl);
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] md:hidden">
-      <div className="bg-white/95 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center py-3 px-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] rounded-t-[2rem]">
-        {menus.map((item) => {
-          const active = checkActive(item.path);
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`flex flex-col items-center gap-1 transition-all duration-300 relative ${
-                active
-                  ? "text-orange-500 font-black scale-110 -translate-y-1"
-                  : "text-gray-400 hover:text-orange-300"
-              }`}
-            >
-              {active && (
-                <span className="absolute -top-1 w-1 h-1 bg-orange-500 rounded-full animate-pulse"></span>
-              )}
+      <div className="bg-white/95 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center  shadow-[0_-8px_30px_rgba(0,0,0,0.08)] rounded-t-[2rem] relative">
+        {/* Menu Kiri 1: Home */}
+        <Link
+          to="/"
+          className={`flex flex-col items-center gap-1 transition-all duration-300 relative ${
+            checkActive("/")
+              ? "text-orange-500 font-black scale-105"
+              : "text-gray-400 hover:text-orange-300"
+          }`}
+        >
+          <HiOutlineHome size={22} />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">
+            Home
+          </span>
+        </Link>
 
-              <div
-                className={`${active ? "drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]" : ""}`}
-              >
-                {item.icon}
-              </div>
+        {/* Menu Kiri 2: Surat */}
+        <Link
+          to="/surah"
+          className={`flex flex-col items-center gap-1 transition-all duration-300 relative ${
+            checkActive("/surah")
+              ? "text-orange-500 font-black scale-105"
+              : "text-gray-400 hover:text-orange-300"
+          }`}
+        >
+          <HiOutlineBookOpen size={22} />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">
+            Surat
+          </span>
+        </Link>
 
-              <span className="text-[10px] font-bold uppercase tracking-tighter">
-                {item.name}
-              </span>
-            </Link>
-          );
-        })}
+        {/* TOMBOL TENGAH MENONJOL (Gaya QRIS / Action Button) */}
+        <div className="flex flex-col items-center relative -top-4">
+          <button
+            onClick={handleLanjutBaca}
+            className="w-14 h-14 bg-gradient-to-tr from-orange-500 to-orange-400 text-white rounded-full shadow-[0_8px_20px_rgba(249,115,22,0.4)] flex items-center justify-center transform active:scale-95 transition-all border-4 border-white"
+          >
+            <FaPlay size={20} className="translate-x-0.5" />
+          </button>
+          <span className="text-[10px] font-extrabold uppercase tracking-tighter text-orange-600 mt-1">
+            Lanjut
+          </span>
+        </div>
+
+        {/* Menu Kanan 1: Doa */}
+        <Link
+          to="/doa"
+          className={`flex flex-col items-center gap-1 transition-all duration-300 relative ${
+            checkActive("/doa")
+              ? "text-orange-500 font-black scale-105"
+              : "text-gray-400 hover:text-orange-300"
+          }`}
+        >
+          <MdOutlineMenuBook size={22} />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">
+            Doa
+          </span>
+        </Link>
+
+        {/* Menu Kanan 2: Jadwal */}
+        <Link
+          to="/jadwal"
+          className={`flex flex-col items-center gap-1 transition-all duration-300 relative ${
+            checkActive("/jadwal")
+              ? "text-orange-500 font-black scale-105"
+              : "text-gray-400 hover:text-orange-300"
+          }`}
+        >
+          <MdOutlineAccessTime size={22} />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">
+            Jadwal
+          </span>
+        </Link>
       </div>
     </div>
   );

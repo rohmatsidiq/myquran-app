@@ -5,7 +5,7 @@ import NavMobile from "./NavMobile";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-[#FDFCFB] flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Navbar Desktop */}
       <Navbar />
 
@@ -17,7 +17,7 @@ export default function Layout() {
       </main>
 
       {/* Navigasi Mobile Bawah */}
-      <NavMobile />
+      {/* <NavMobile /> */}
     </div>
   );
 }
