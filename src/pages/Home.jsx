@@ -166,7 +166,7 @@ export default function Home() {
             Assalamualaikum <MdOutlineWavingHand className="text-orange-400" />
           </p>
           <h1 className="text-2xl font-black text-gray-800 tracking-tight">
-            {greeting}, Rohmat Sidiq
+            {greeting}
           </h1>
         </div>
         <Link
