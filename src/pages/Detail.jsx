@@ -109,8 +109,8 @@ export default function Detail() {
           });
 
           element.classList.add(
-            "ring-4",
-            "ring-orange-400",
+            // "ring-4",
+            // "ring-orange-400",
             "transition-all",
             "duration-500",
           );

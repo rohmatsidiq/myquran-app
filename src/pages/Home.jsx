@@ -7,9 +7,9 @@ import {
   MdOutlineWavingHand,
   MdOutlineInstallMobile,
   MdClose,
-  MdOutlineMenuBook,
+  MdOutlineBookmarkBorder,
 } from "react-icons/md";
-import { FaBookmark, FaPlay } from "react-icons/fa";
+import { FaBookmark, FaPlay, FaArrowRight } from "react-icons/fa";
 import NavMobile from "../components/NavMobile";
 
 export default function Home() {
@@ -18,8 +18,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [greeting, setGreeting] = useState("");
 
-  // State untuk Doa Harian Random
-  const [randomDoa, setRandomDoa] = useState(null);
+  // State untuk menyimpan daftar bookmark dari localStorage
+  const [bookmarks, setBookmarks] = useState([]);
 
   const kota = localStorage.getItem("userKabKota");
   const provinsi = localStorage.getItem("userProvinsi");
@@ -29,23 +29,19 @@ export default function Home() {
   const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   useEffect(() => {
-    // 1. Cek apakah sudah dalam mode aplikasi (standalone)
     const isStandalone = window.matchMedia(
       "(display-mode: standalone)",
     ).matches;
 
-    // 2. Tangkap event instalasi
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Hanya munculkan banner jika belum terinstal
       if (!isStandalone) {
         setShowInstallBanner(true);
       }
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
@@ -67,22 +63,15 @@ export default function Home() {
     else setGreeting("Selamat Malam");
   }, []);
 
-  // Fetch Jadwal Sholat & Doa Harian
+  // Ambil data Bookmark dari localStorage saat komponen dimuat
   useEffect(() => {
-    const fetchData = async () => {
-      // Ambil data Doa Harian (Contoh API Doa)
-      try {
-        const resDoa = await axios("https://api-reciter.vercel.app/doa"); // atau endpoint doa yang Anda gunakan
-        // Ambil random doa
-        const listDoa = resDoa.data;
-        if (listDoa && listDoa.length > 0) {
-          const randomIndex = Math.floor(Math.random() * listDoa.length);
-          setRandomDoa(listDoa[randomIndex]);
-        }
-      } catch (e) {
-        // Fallback jika API doa berbeda
-      }
+    const savedBookmarks = JSON.parse(localStorage.getItem("bookmark") || "[]");
+    setBookmarks(savedBookmarks);
+  }, []);
 
+  // Fetch Jadwal Sholat
+  useEffect(() => {
+    const fetchJadwal = async () => {
       if (!kota || !provinsi) {
         setLoading(false);
         return;
@@ -120,7 +109,7 @@ export default function Home() {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchJadwal();
   }, [kota, provinsi]);
 
   // Handler Lanjut Baca
@@ -136,7 +125,7 @@ export default function Home() {
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 pb-10 md:pb-0 max-w-6xl mx-auto">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 max-w-4xl mx-auto">
       {/* BANNER INSTALASI PWA */}
       {showInstallBanner && (
         <div className="mt-4 animate-in slide-in-from-top-10 duration-500">
@@ -177,7 +166,7 @@ export default function Home() {
             Assalamualaikum <MdOutlineWavingHand className="text-orange-400" />
           </p>
           <h1 className="text-2xl font-black text-gray-800 tracking-tight">
-            {greeting}
+            {greeting}, Rohmat Sidiq
           </h1>
         </div>
         <Link
@@ -189,7 +178,7 @@ export default function Home() {
       </div>
 
       {/* GRID UTAMA: Jadwal Sholat & Quick Last Read Card */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* DASHBOARD SHOLAT NEXT SAJA (Memakan 2 Kolom) */}
         <div className="md:col-span-2">
           {!kota || !provinsi ? (
@@ -245,6 +234,83 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* KARTU LANJUT BACA / QUICK ACTION */}
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-[2.5rem] text-white shadow-xl flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
+          <div>
+            <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-orange-400 mb-4">
+              <FaPlay size={14} />
+            </div>
+            <h3 className="font-bold text-base mb-1">Lanjutkan Membaca</h3>
+            <p className="text-xs text-gray-400">
+              {tanda
+                ? "Lanjutkan dari ayat terakhir yang ditandai."
+                : "Mulai baca dari awal surat."}
+            </p>
+          </div>
+          <button
+            onClick={handleLanjutBaca}
+            className="mt-6 w-full bg-orange-500 hover:bg-orange-600 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/20"
+          >
+            {tanda ? "Lanjut Baca" : "Mulai Baca"}
+          </button>
+        </div>
+      </div>
+
+      {/* CARD BOOKMARK TERBARU (WIDGET TAMBAHAN DI HOME) */}
+      <div className="mt-6">
+        <div className="p-6 md:p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-xl shadow-gray-200/20 relative overflow-hidden">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center font-bold">
+                <MdOutlineBookmarkBorder size={18} />
+              </div>
+              <h3 className="font-black text-gray-800 text-base">
+                Bookmark Terakhir
+              </h3>
+            </div>
+            <Link
+              to="/bookmark"
+              className="text-xs font-bold text-orange-500 hover:text-orange-600 flex items-center gap-1 transition-all"
+            >
+              Lihat Semua <FaArrowRight size={10} />
+            </Link>
+          </div>
+
+          {bookmarks.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+              <p className="text-xs text-gray-400 font-medium">
+                Belum ada ayat yang disimpan ke bookmark.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {bookmarks
+                .slice(-4)
+                .reverse()
+                .map((item, index) => (
+                  <Link
+                    key={index}
+                    to={`/detail/${item.nomor}#${item.nomor}--${item.ayat}`}
+                    className="p-4 bg-orange-50/40 hover:bg-orange-50 border border-orange-100/60 rounded-2xl transition-all flex items-center justify-between group"
+                  >
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-800 group-hover:text-orange-600 transition-colors">
+                        {item.surat}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Ayat {item.ayat}
+                      </p>
+                    </div>
+                    <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center text-orange-400 shadow-sm">
+                      <FaBookmark size={12} />
+                    </div>
+                  </Link>
+                ))}
             </div>
           )}
         </div>
