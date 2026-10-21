@@ -125,7 +125,7 @@ export default function Home() {
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 max-w-4xl mx-auto">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4 pb-10 max-w-4xl mx-auto">
       {/* BANNER INSTALASI PWA */}
       {showInstallBanner && (
         <div className="mt-4 animate-in slide-in-from-top-10 duration-500">
