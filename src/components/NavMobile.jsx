@@ -22,18 +22,36 @@ export default function NavMobile() {
   };
 
   // Logika hitung ayat selanjutnya (sama seperti di Surah.jsx)
-  const handleLanjutBaca = () => {
+  const handleLanjutBaca = async () => {
     if (!tanda) {
-      navigate("/detail/1");
+      navigate("/detail/1#1--1");
       return;
     }
 
     const [nomorSuratTerakhir, ayatTerakhir] = tanda.split("--").map(Number);
 
-    // Karena kita butuh jumlah ayat, kita arahkan ke surat terakhirnya atau fallback aman
-    // Jika data surat tersimpan atau langsung oper parameter url hash-nya:
-    const newUrl = `/detail/${nomorSuratTerakhir}#${nomorSuratTerakhir}--${ayatTerakhir}`;
-    navigate(newUrl);
+    try {
+      const res = await axios(
+        `https://equran.id/api/v2/surat/${nomorSuratTerakhir}`,
+      );
+      const jumlahAyat = res.data.data.jumlahAyat;
+
+      let targetSurat = nomorSuratTerakhir;
+      let targetAyat = ayatTerakhir;
+
+      if (ayatTerakhir < jumlahAyat) {
+        targetAyat = ayatTerakhir + 1;
+      } else if (nomorSuratTerakhir < 114) {
+        targetSurat = nomorSuratTerakhir + 1;
+        targetAyat = 1;
+      }
+
+      navigate(`/detail/${targetSurat}#${targetSurat}--${targetAyat}`);
+    } catch (error) {
+      navigate(
+        `/detail/${nomorSuratTerakhir}#${nomorSuratTerakhir}--${ayatTerakhir + 1}`,
+      );
+    }
   };
 
   return (
