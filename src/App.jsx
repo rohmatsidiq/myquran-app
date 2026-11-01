@@ -11,6 +11,8 @@ import Settings from "./pages/Settings";
 import Doa from "./pages/Doa";
 import Layout from "./components/Layout";
 import JadwalSholat from "./pages/JadwalSholat";
+import AdminUsers from "./pages/AdminUsers";
+import PushNotificationManager from "./components/PushNotificationManager";
 
 function App() {
   return (
@@ -22,6 +24,7 @@ function App() {
       }}
       // getContainer={() => container}
     >
+      <PushNotificationManager />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home />} />
@@ -31,6 +34,7 @@ function App() {
           <Route path="/detail/:nomor" element={<Detail />} />
           <Route path="/bookmark" element={<Bookmark />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/users" element={<AdminUsers />} />
         </Route>
       </Routes>
     </ConfigProvider>

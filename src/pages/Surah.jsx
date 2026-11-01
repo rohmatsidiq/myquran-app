@@ -123,7 +123,7 @@ export default function Surah() {
             </div>
           </div>
 
-          <button
+          {/* <button
             onClick={handleLanjutBaca}
             className="w-full md:w-auto bg-orange-400 text-white font-bold px-8 py-4 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
           >
@@ -136,7 +136,7 @@ export default function Surah() {
               <path d="M9 4.804A7.993 7.993 0 002 12a7.998 7.998 0 003 6.318V19a1 1 0 001 1h8a1 1 0 001-1v-0.682A7.998 7.998 0 0018 12a7.993 7.993 0 00-7-7.196V10a1 1 0 01-2 0V4.804z" />
             </svg>
             Lanjut Baca
-          </button>
+          </button> */}
         </div>
 
         {/* 4. Grid Surat */}

@@ -6,12 +6,26 @@ import {
   MdOutlineMenuBook,
   MdOutlineSettings,
 } from "react-icons/md";
-import { FaPlay } from "react-icons/fa"; // Menggunakan ikon play/lanjut
+import { FaPlay } from "react-icons/fa";
+import axios from "axios";
+
+// Tambahan import Clerk & Convex
+import { useUser } from "@clerk/clerk-react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export default function NavMobile() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const tanda = localStorage.getItem("tanda");
+
+  const { isSignedIn, user } = useUser();
+  const localTanda = localStorage.getItem("tanda");
+
+  // Ambil data tracking dari database Convex jika user sudah login
+  const readingLogs = useQuery(
+    api.reading.getReadingLogs,
+    isSignedIn && user ? { clerkId: user.id } : "skip",
+  );
 
   const checkActive = (path) => {
     if (path === "/") return pathname === "/";
@@ -21,14 +35,19 @@ export default function NavMobile() {
     return pathname.startsWith(path);
   };
 
-  // Logika hitung ayat selanjutnya (sama seperti di Surah.jsx)
+  // Logika Lanjut Baca yang Cerdas (Ayat Terakhir + 1, atau Pindah Surat)
   const handleLanjutBaca = async () => {
-    if (!tanda) {
+    // Tentukan tanda aktif (prioritaskan localTanda sebagai acuan nomor surat/ayat terakhir)
+    const tandaAktif = localTanda;
+
+    if (!tandaAktif) {
       navigate("/detail/1#1--1");
       return;
     }
 
-    const [nomorSuratTerakhir, ayatTerakhir] = tanda.split("--").map(Number);
+    const [nomorSuratTerakhir, ayatTerakhir] = tandaAktif
+      .split("--")
+      .map(Number);
 
     try {
       const res = await axios(
@@ -40,16 +59,23 @@ export default function NavMobile() {
       let targetAyat = ayatTerakhir;
 
       if (ayatTerakhir < jumlahAyat) {
+        // Belum habis di surat ini, lanjut ke ayat berikutnya (+1)
         targetAyat = ayatTerakhir + 1;
       } else if (nomorSuratTerakhir < 114) {
+        // SUDAH HABIS: Pindah ke surat selanjutnya, mulai dari ayat 1!
         targetSurat = nomorSuratTerakhir + 1;
+        targetAyat = 1;
+      } else {
+        targetSurat = 1;
         targetAyat = 1;
       }
 
       navigate(`/detail/${targetSurat}#${targetSurat}--${targetAyat}`);
     } catch (error) {
+      // Fallback aman jika gagal fetch API
+      const nextAyat = ayatTerakhir + 1;
       navigate(
-        `/detail/${nomorSuratTerakhir}#${nomorSuratTerakhir}--${ayatTerakhir + 1}`,
+        `/detail/${nomorSuratTerakhir}#${nomorSuratTerakhir}--${nextAyat}`,
       );
     }
   };
