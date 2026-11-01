@@ -15,11 +15,8 @@ if (!PUBLISHABLE_KEY) {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ClerkProvider
-      publishableKey={PUBLISHABLE_KEY}
-      proxyUrl="https://myquran-peach.vercel.app/__clerk"
-    >
-      {/* Menggunakan ConvexProvider biasa dan mengambil token dari useAuth Clerk */}
+    {/* Hapus properti proxyUrl agar SDK memuat skrip dengan benar */}
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <ConvexProvider client={convex} useAuth={useAuth}>
         <BrowserRouter>
           <App />
