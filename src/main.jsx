@@ -9,9 +9,16 @@ import "./index.css";
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key");
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      proxyUrl="https://myquran-peach.vercel.app/__clerk"
+    >
       {/* Menggunakan ConvexProvider biasa dan mengambil token dari useAuth Clerk */}
       <ConvexProvider client={convex} useAuth={useAuth}>
         <BrowserRouter>

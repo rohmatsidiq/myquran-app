@@ -2,7 +2,11 @@
   "rewrites": [
     {
       "source": "/__clerk/:path*",
-      "destination": "https://clerk.myquran-peach.vercel.app/__clerk/:path*"
+      "destination": "https://myquran-peach.vercel.app/__clerk/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
