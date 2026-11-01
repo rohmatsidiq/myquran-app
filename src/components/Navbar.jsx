@@ -237,10 +237,11 @@ export default function Navbar() {
             </Link>
             <Link
               to="/bookmark"
-              className={`font-bold text-sm transition-all ${
+              onClick={closeMenu}
+              className={`font-bold text-sm py-2 px-4 rounded-xl transition-all ${
                 checkActive("/bookmark")
-                  ? "text-orange-600 scale-105"
-                  : "text-gray-500 hover:text-orange-400"
+                  ? "bg-orange-50 text-orange-600"
+                  : "text-gray-600"
               }`}
             >
               Bookmark
@@ -248,10 +249,11 @@ export default function Navbar() {
             {userRole === "admin" && (
               <Link
                 to="/users"
-                className={`font-bold text-sm transition-all ${
+                onClick={closeMenu}
+                className={`font-bold text-sm py-2 px-4 rounded-xl transition-all ${
                   checkActive("/users")
-                    ? "text-orange-600 scale-105"
-                    : "text-purple-600 hover:text-purple-400"
+                    ? "bg-orange-50 text-orange-600"
+                    : "text-gray-600"
                 }`}
               >
                 Data Users ✨

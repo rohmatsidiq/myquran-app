@@ -4,7 +4,6 @@ import axios from "axios";
 import {
   MdOutlineSettings,
   MdLocationOn,
-  MdOutlineWavingHand,
   MdOutlineInstallMobile,
   MdClose,
   MdOutlineBookmarkBorder,
@@ -85,12 +84,13 @@ export default function Home() {
     }
   };
 
+  // Mengubah sapaan menjadi nuansa Islami berdasarkan waktu
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 11) setGreeting("Selamat Pagi");
-    else if (hour < 15) setGreeting("Selamat Siang");
-    else if (hour < 19) setGreeting("Selamat Sore");
-    else setGreeting("Selamat Malam");
+    if (hour < 11) setGreeting("Sabahul Khair (Selamat Pagi)");
+    else if (hour < 15) setGreeting("Selamat Siang, Barakallahu fiikum");
+    else if (hour < 19) setGreeting("Masa'ul Khair (Selamat Sore)");
+    else setGreeting("Lailatukum Saidah (Selamat Malam)");
   }, []);
 
   // Ambil data Bookmark & Info Terakhir Baca (Mendukung Database Convex & LocalStorage)
@@ -255,14 +255,21 @@ export default function Home() {
         </div>
       )}
 
-      {/* Header Greeting */}
+      {/* Header Greeting Islami dengan Nama Pengguna */}
       <div className="mt-6 mb-6 flex justify-between items-center px-1">
         <div>
-          <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
-            Assalamualaikum <MdOutlineWavingHand className="text-orange-400" />
-          </p>
           <h1 className="text-2xl font-black text-gray-800 tracking-tight">
-            {greeting}
+            {isSignedIn && user ? (
+              <span>
+                Ahlan wa Sahlan,{" "}
+                <span className="text-orange-500">
+                  {user.fullName || user.firstName || "Sahabat"}
+                </span>{" "}
+                ✨
+              </span>
+            ) : (
+              <span>{greeting}</span>
+            )}
           </h1>
         </div>
         <Link
@@ -334,8 +341,12 @@ export default function Home() {
           )}
         </div>
 
+        <div className="sm:hidden">
+          <Progress />
+        </div>
+
         {/* KARTU LANJUT BACA / QUICK ACTION DENGAN DETAIL SURAT */}
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-[2.5rem] text-white shadow-xl flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white p-6 rounded-[2.5rem] shadow-xl flex flex-col justify-between relative overflow-hidden">
           <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"></div>
           <div>
             <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-orange-400 mb-4">
@@ -344,18 +355,18 @@ export default function Home() {
             <h3 className="font-bold text-base mb-1">Lanjutkan Membaca</h3>
 
             {/* Menampilkan Nama Surat & Ayat Terakhir dari Database / LocalStorage */}
-            <div className="mt-2 bg-white/5 border border-white/10 p-3 rounded-2xl">
+            <div className="mt-2 bg-white/5 border p-3 rounded-2xl">
               <p className="text-xs font-bold text-orange-400 truncate">
                 {lastReadInfo.surat}
               </p>
-              <p className="text-[11px] text-gray-300 font-medium">
+              <p className="text-[11px] text-gray-600 font-medium">
                 {lastReadInfo.ayat}
               </p>
             </div>
           </div>
           <button
             onClick={handleLanjutBaca}
-            className="mt-6 w-full bg-orange-500 hover:bg-orange-600 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/20"
+            className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/20"
           >
             {localTanda || (isSignedIn && readingLogs?.length > 0)
               ? "Lanjut Baca"
@@ -364,7 +375,9 @@ export default function Home() {
         </div>
       </div>
 
-      <Progress />
+      <div className="hidden sm:block mt-6">
+        <Progress />
+      </div>
 
       {/* CARD BOOKMARK TERBARU (WIDGET TAMBAHAN DI HOME) */}
       <div className="mt-6">
