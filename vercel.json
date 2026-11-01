@@ -1,3 +1,8 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/__clerk/:path*",
+      "destination": "https://clerk.myquran-peach.vercel.app/__clerk/:path*"
+    }
+  ]
 }
