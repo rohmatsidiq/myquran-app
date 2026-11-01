@@ -87,10 +87,10 @@ export default function Home() {
   // Mengubah sapaan menjadi nuansa Islami berdasarkan waktu
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 11) setGreeting("Sabahul Khair (Selamat Pagi)");
+    if (hour < 11) setGreeting("Shabahul Khair");
     else if (hour < 15) setGreeting("Selamat Siang, Barakallahu fiikum");
-    else if (hour < 19) setGreeting("Masa'ul Khair (Selamat Sore)");
-    else setGreeting("Lailatukum Saidah (Selamat Malam)");
+    else if (hour < 19) setGreeting("Masa'ul Khair");
+    else setGreeting("Lailatukum Saidah");
   }, []);
 
   // Ambil data Bookmark & Info Terakhir Baca (Mendukung Database Convex & LocalStorage)
@@ -375,9 +375,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* <div className="hidden sm:block mt-6">
+      <div className="hidden sm:block mt-6">
         <Progress />
-      </div> */}
+      </div>
 
       {/* CARD BOOKMARK TERBARU (WIDGET TAMBAHAN DI HOME) */}
       <div className="mt-6">
