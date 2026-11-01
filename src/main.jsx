@@ -15,8 +15,10 @@ if (!PUBLISHABLE_KEY) {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* Hapus properti proxyUrl agar SDK memuat skrip dengan benar */}
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      proxyUrl="https://myquran-peach.vercel.app/__clerk"
+    >
       <ConvexProvider client={convex} useAuth={useAuth}>
         <BrowserRouter>
           <App />
