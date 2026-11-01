@@ -32,9 +32,6 @@ export default function Progress() {
     isSignedIn && user ? { clerkId: user.id } : "skip",
   );
 
-  const logReadingMutation = useMutation(api.reading.logReading);
-  const [loadingTest, setLoadingTest] = useState(false);
-
   // State untuk navigasi bulan pada kalender (Default: Bulan & Tahun saat ini)
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -49,24 +46,6 @@ export default function Progress() {
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
     );
   };
-
-  // Fungsi simulasi menandai bacaan hari ini
-  //   const handleMarkToday = async () => {
-  //     if (!user) return;
-  //     setLoadingTest(true);
-  //     const today = new Date().toISOString().split("T")[0]; // Format "YYYY-MM-DD"
-  //     try {
-  //       await logReadingMutation({
-  //         clerkId: user.id,
-  //         date: today,
-  //         surah: "Al-Qur'an Daily Check",
-  //       });
-  //     } catch (err) {
-  //       console.error("Gagal menyimpan progress:", err);
-  //     } finally {
-  //       setLoadingTest(false);
-  //     }
-  //   };
 
   // Generate Hari dalam Kalender Bulanan
   const generateMonthCalendar = () => {
@@ -157,8 +136,9 @@ export default function Progress() {
               lihat kalender bulanan harian Anda dengan masuk ke akun Anda.
             </p>
 
-            <SignInButton mode="modal">
-              <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/20">
+            {/* Menggunakan asChild agar SignInButton meneruskan aksi klik ke tombol di dalamnya */}
+            <SignInButton mode="modal" asChild>
+              <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-orange-500/20 cursor-pointer">
                 Login / Register Sekarang
               </button>
             </SignInButton>
@@ -166,22 +146,12 @@ export default function Progress() {
         ) : (
           /* KONDISI 2: SUDAH LOGIN */
           <div>
-            {/* <div className="flex justify-between items-center mb-4">
-              <button
-                onClick={handleMarkToday}
-                disabled={loadingTest}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 shadow-sm"
-              >
-                {loadingTest ? "Menyimpan..." : "Tandai Baca Hari Ini ✓"}
-              </button>
-            </div> */}
-
             {/* Navigasi Kalender Bulanan */}
             <div className="bg-orange-50/50 border border-orange-100 p-4 rounded-3xl">
               <div className="flex justify-between items-center mb-4">
                 <button
                   onClick={handlePrevMonth}
-                  className="p-2 bg-white rounded-xl text-gray-600 hover:text-orange-500 shadow-sm transition-all"
+                  className="p-2 bg-white rounded-xl text-gray-600 hover:text-orange-500 shadow-sm transition-all cursor-pointer"
                   title="Bulan Sebelumnya"
                 >
                   <FaChevronLeft size={14} />
@@ -195,7 +165,7 @@ export default function Progress() {
                 </div>
                 <button
                   onClick={handleNextMonth}
-                  className="p-2 bg-white rounded-xl text-gray-600 hover:text-orange-500 shadow-sm transition-all"
+                  className="p-2 bg-white rounded-xl text-gray-600 hover:text-orange-500 shadow-sm transition-all cursor-pointer"
                   title="Bulan Berikutnya"
                 >
                   <FaChevronRight size={14} />
