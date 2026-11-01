@@ -375,9 +375,9 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="hidden sm:block mt-6">
+      {/* <div className="hidden sm:block mt-6">
         <Progress />
-      </div>
+      </div> */}
 
       {/* CARD BOOKMARK TERBARU (WIDGET TAMBAHAN DI HOME) */}
       <div className="mt-6">

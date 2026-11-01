@@ -7,6 +7,7 @@ import {
   SignInButton,
   UserButton,
   useUser,
+  useAuth,
 } from "@clerk/clerk-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -34,6 +35,7 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
+  const { isSignedIn, isLoaded } = useAuth(); // Tambahkan useAuth untuk melacak status muat clerk
 
   // Ambil data detail user (termasuk role) dari Convex berdasarkan clerkId
   const dbUser = useQuery(
@@ -140,16 +142,17 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Auth Section (Desktop) - Nama di atas, Role di bawah, Foto di kanan */}
+          {/* Auth Section (Desktop) - Menggunakan pengecekan isLoaded & isSignedIn agar tombol aman terpanggil */}
           <div className="hidden md:flex items-center gap-3">
-            <SignedOut>
+            {isLoaded && !isSignedIn && (
               <SignInButton mode="modal">
                 <button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-orange-500/20">
                   Login / Register
                 </button>
               </SignInButton>
-            </SignedOut>
-            <SignedIn>
+            )}
+
+            {isLoaded && isSignedIn && (
               <div className="flex items-center gap-3 bg-orange-50/60 border border-orange-100 px-3 py-1.5 rounded-2xl max-w-[220px]">
                 <div className="flex flex-col text-right w-full overflow-hidden">
                   <span
@@ -170,14 +173,12 @@ export default function Navbar() {
                   }}
                 />
               </div>
-            </SignedIn>
+            )}
           </div>
 
           {/* Mobile Toggle & Auth Button Preview */}
           <div className="flex md:hidden items-center gap-3">
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            {isLoaded && isSignedIn && <UserButton />}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 text-gray-600 hover:text-orange-500 transition-colors focus:outline-none"
@@ -264,7 +265,7 @@ export default function Navbar() {
 
             {/* Auth Section (Mobile) */}
             <div className="pt-2">
-              <SignedOut>
+              {isLoaded && !isSignedIn && (
                 <SignInButton mode="modal">
                   <button
                     onClick={closeMenu}
@@ -273,7 +274,7 @@ export default function Navbar() {
                     Login / Register
                   </button>
                 </SignInButton>
-              </SignedOut>
+              )}
             </div>
           </div>
         )}
