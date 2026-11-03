@@ -227,7 +227,7 @@ export default function Home() {
         <div className="mt-4 animate-in slide-in-from-top-10 duration-500">
           <div className="bg-gray-900 text-white p-4 rounded-[2rem] shadow-xl flex items-center justify-between gap-4 border border-gray-800">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center font-black text-lg shadow-lg shadow-orange-500/20">
+              <div className="w-10 h-10 bg-orange-500 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-orange-500/20">
                 Q
               </div>
               <div>
