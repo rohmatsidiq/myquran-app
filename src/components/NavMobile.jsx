@@ -128,16 +128,16 @@ export default function NavMobile() {
 
         {/* Menu Kanan 1: Doa */}
         <Link
-          to="/doa"
+          to="/dzikr"
           className={`flex flex-col items-center gap-1 transition-all duration-300 relative ${
-            checkActive("/doa")
+            checkActive("/dzikr")
               ? "text-orange-500 font-black scale-105"
               : "text-gray-400 hover:text-orange-300"
           }`}
         >
           <MdOutlineMenuBook size={22} />
           <span className="text-[10px] font-bold uppercase tracking-tighter">
-            Doa
+            DPP
           </span>
         </Link>
 

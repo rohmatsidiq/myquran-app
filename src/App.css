@@ -4,6 +4,7 @@
 
 .font-arab {
   font-family: "Amiri", serif;
+  line-height: 2 !important;
 }
 
 .bg-image {

@@ -13,6 +13,8 @@ import Layout from "./components/Layout";
 import JadwalSholat from "./pages/JadwalSholat";
 import AdminUsers from "./pages/AdminUsers";
 import PushNotificationManager from "./components/PushNotificationManager";
+import PageView from "./pages/PageView";
+import Dzikir from "./pages/Dzikr";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path="/bookmark" element={<Bookmark />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/users" element={<AdminUsers />} />
+          <Route path="/dzikr" element={<Dzikir />} />
+          <Route path="/surat/:nomor/page/:halaman" element={<PageView />} />
         </Route>
       </Routes>
     </ConfigProvider>

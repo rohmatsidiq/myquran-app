@@ -98,6 +98,16 @@ export default function Navbar() {
               Surat
             </Link>
             <Link
+              to="/dzikr"
+              className={`font-bold text-sm transition-all ${
+                checkActive("/dzikr")
+                  ? "text-orange-600 scale-105"
+                  : "text-gray-500 hover:text-orange-400"
+              }`}
+            >
+              DPP
+            </Link>
+            <Link
               to="/doa"
               className={`font-bold text-sm transition-all ${
                 checkActive("/doa")
@@ -213,6 +223,17 @@ export default function Navbar() {
               }`}
             >
               Surat
+            </Link>
+            <Link
+              to="/dzikr"
+              onClick={closeMenu}
+              className={`font-bold text-sm py-2 px-4 rounded-xl transition-all ${
+                checkActive("/dzikr")
+                  ? "bg-orange-50 text-orange-600"
+                  : "text-gray-600"
+              }`}
+            >
+              DPP
             </Link>
             <Link
               to="/doa"
